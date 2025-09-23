@@ -20,7 +20,7 @@
                         @foreach($post->tags as $tag)
                             <span> {{ $tag->name }} </span>
                         @endforeach
-                        <a class="nav-link" href="{{ route('posts', $post->id) }}">далее...</a>
+                        <a class="nav-link" href="{{ route('posts.show',['id' => $post->id]) }}">далее...</a>
                     </div>
                 </div>
             @endforeach
