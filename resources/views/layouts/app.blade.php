@@ -37,6 +37,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('contact') }}">Контакты</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('posts') }}">Статьи</a>
+            </li>
         </ul>
     </div>
 </nav>
