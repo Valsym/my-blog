@@ -6,7 +6,7 @@ use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
 // Маршруты для сайта
-Route::get('/', [SiteController::class, 'index'])->name('home');
+Route::get('/home', [SiteController::class, 'index'])->name('home');
 Route::get('/about', [SiteController::class, 'about'])->name('about');
 Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
 Route::post('/contact', [SiteController::class, 'submitContactForm'])->name('contact.submit');
@@ -23,8 +23,8 @@ Route::prefix('admin')->group(function () {
 //        Route::post('/news', [NewsController::class, 'store'])->name('admin.news.store');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
-        Route::get("/posts/create", [PostController::class, "create"]);
-        Route::post("/posts", [PostController::class, "store"]);
+        Route::get("/posts/create", [PostController::class, "create"])->name('admin.posts.create');
+        Route::post("/posts/store", [PostController::class, "store"])->name('admin.posts.store');
 //        Route::get("/posts/{id}", [PostController::class, "show"])->name('posts.show');
         Route::get("/posts/{id}/edit", [PostController::class, "edit"]);
         Route::put("/posts/{id}", [PostController::class, "update"]);

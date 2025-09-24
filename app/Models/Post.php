@@ -7,6 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
+    protected $fillable = [
+        'title',
+        'content',
+        'slug',
+        'user_id',
+        'excerpt',
+        'views',
+        'published'
+    ];
+
     /**
      * Post принадлежит одному User'у
      *
