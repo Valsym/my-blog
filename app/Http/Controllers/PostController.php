@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class PostController extends Controller
+class PostController extends SiteController
 {
     /**
      * Display a listing of the resource.
@@ -33,13 +34,28 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        $messages = [
+            "title.required" => "Заголовок обязателен для заполнения",
+            "content.min" => "Содержание должно быть не менее :min символов"
+        ];
+
         $validated = $request->validate([
-            "title" => "required|max:255",
-            "content" => "required"
-        ]);
-        auth()->user()->posts()->create($validated);
-        return redirect()->route("posts.index")
+            "title" => "required|min:3|max:255",
+            "content" => "required|min:10",
+            "tags" => "array",
+            "tags.*" => "exists:tags,id",
+            "published_at" => "nullable|date",
+            'user_id' => Auth::user()->id, //???
+        ], $messages);
+        // Данные прошли валидацию
+        $post = Post::create($validated);
+//        auth()->user()->posts()->create($validated);
+
+        return redirect()->route("posts.show", $post)
             ->with("success", "Статья успешно создана!");
+
+//        return redirect()->route("posts.index")
+//            ->with("success", "Статья успешно создана!");
     }
 //
 

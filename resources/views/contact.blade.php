@@ -26,7 +26,7 @@
 
             <div class="col-md-6">
                 <h2>Форма обратной связи</h2>
-                <form action="{{-- route('contact.submit') --}}" method="POST">
+                <form action="{{ route('contact.submit') }}" method="POST">
                     @csrf
                     <div class="mb-3">
                         <label for="name" class="form-label">Имя</label>
