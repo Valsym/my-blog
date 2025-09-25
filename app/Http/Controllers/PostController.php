@@ -118,6 +118,7 @@ class PostController extends SiteController
     public function show(int $id)//Post $post)
     {
         $post = Post::findOrFail($id);//->load("comments.user");
+//        $posts = Post::with(["user", "tags", "comments"])->get();
         return view("posts.show", compact("post"));
 //        return view("posts.show", compact("post"));
     }
