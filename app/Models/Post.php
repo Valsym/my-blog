@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 //use \App\Models\User;
 
 class Post extends Model
@@ -37,5 +39,22 @@ class Post extends Model
     {
         return $this->belongsToMany(Tag::class);
     }
+
+    /**
+     * Комментарии к посту
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class)->root();
+    }
+
+    /**
+     * Все комментарии (включая ответы)
+     */
+    public function allComments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
 
 }
