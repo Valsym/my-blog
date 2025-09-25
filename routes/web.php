@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AdminAuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
@@ -85,3 +86,15 @@ Route::get("/posts/{id}", [PostController::class, "show"])->name('posts.show');
 //Route::delete("/posts/{id}", [PostController::class, "destroy"]);
 
 // Страница категорий статей (/categories)
+
+// Комментарии
+Route::post('/posts/{post}/comments', [CommentController::class, 'store'])
+    ->name('comments.store');
+Route::prefix('/comments')->group(function () {
+    Route::put('/{comment}', [CommentController::class, 'update'])
+        ->name('comments.update');
+
+    Route::delete('/{comment}', [CommentController::class, 'destroy'])
+        ->name('comments.destroy');
+});
+
