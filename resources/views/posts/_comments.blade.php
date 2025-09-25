@@ -1,68 +1,77 @@
 <div class="comments-section mt-5">
-    <h3 class="h4 mb-3">Комментарии</h3>
+    <h3 class="h4 mb-3">Комментарии ({{ $post->comments->count() }})</h3>
 
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert">
-                <span>&times;</span>
-            </button>
-        </div>
-    @endif
-
-    @if($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <ul class="mb-0">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="close" data-dismiss="alert">
-                <span>&times;</span>
-            </button>
-        </div>
-    @endif
-
+    <!-- Форма добавления комментария -->
     @auth
-        <form action="{{ route('comments.store', $post) }}" method="POST" class="mb-4">
-            @csrf
-            <div class="form-group">
-                <textarea name="body" rows="3" class="form-control"
-                          placeholder="Напишите ваш комментарий..." required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Оставить комментарий</button>
-        </form>
+        <div class="comment-form mb-4">
+            <form action="{{ route('comments.store', $post) }}" method="POST" class="new-comment-form">
+                @csrf
+                <input type="hidden" name="parent_id" value="">
+
+                <div class="form-group">
+                    <label for="body" class="font-weight-bold">Ваш комментарий</label>
+                    <textarea name="body" id="body" rows="3"
+                              class="form-control"
+                              placeholder="Напишите ваш комментарий..."></textarea>
+                    @error('body')
+                    <span class="text-danger small">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Оставить комментарий
+                </button>
+            </form>
+        </div>
     @else
         <p class="mb-3">
-            <a href="{{ route('login') }}" class="text-primary">Войдите</a>, чтобы оставить комментарий
+            <a href="{{ route('login') }}" class="text-primary">Войдите</a>,
+            чтобы оставить комментарий
         </p>
     @endauth
 
     <!-- Список комментариев -->
     <div class="comments-list">
         @foreach($post->comments as $comment)
-            <div class="card mb-2">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <h6 class="card-title mb-1">{{ $comment->user->name }}</h6>
-                        <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
-                    </div>
-                    <p class="card-text">{{ $comment->body }}</p>
-
-                    <!-- Форма ответа (простая версия) -->
-                    @auth
-                        <form action="{{ route('comments.store', $post) }}" method="POST" class="mt-2">
-                            @csrf
-                            <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                            <div class="form-group mb-2">
-                                <textarea name="body" rows="2" class="form-control form-control-sm"
-                                          placeholder="Ответить..."></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-sm btn-outline-primary">Ответить</button>
-                        </form>
-                    @endauth
-                </div>
-            </div>
+            @include('posts._comment', ['comment' => $comment, 'depth' => 0])
         @endforeach
+
+        @if($post->comments->isEmpty())
+            <p class="text-muted">Пока нет комментариев. Будьте первым!</p>
+        @endif
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Обработка ответов на комментарии
+        document.querySelectorAll('.reply-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                const form = document.getElementById(`reply-form-${commentId}`);
+                if (form) {
+                    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+                    form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+        });
+
+        // Обработка отмены ответа
+        document.querySelectorAll('.cancel-reply').forEach(button => {
+            button.addEventListener('click', function() {
+                const form = this.closest('.comment-reply-form');
+                if (form) {
+                    form.style.display = 'none';
+                }
+            });
+        });
+
+        // Простая отправка форм (перезагрузка страницы после успеха)
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                // Можно добавить AJAX здесь, но пока оставляем стандартное поведение
+                console.log('Form submitted:', this.action);
+            });
+        });
+    });
+</script>
