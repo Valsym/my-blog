@@ -42,6 +42,34 @@
     </div>
 </div>
 
+<!-- Modal for editing comment -->
+<div class="modal fade" id="editCommentModal" tabindex="-1" role="dialog" aria-labelledby="editCommentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCommentModalLabel">Редактировать комментарий</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="editCommentForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editCommentBody">Комментарий</label>
+                        <textarea class="form-control" id="editCommentBody" name="body" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Обработка ответов на комментарии
@@ -72,6 +100,60 @@
                 // Можно добавить AJAX здесь, но пока оставляем стандартное поведение
                 console.log('Form submitted:', this.action);
             });
+        });
+    });
+</script>
+
+<script>
+    // 2. Добавим JavaScript для обработки нажатия на кнопку "Редактировать":
+    document.addEventListener('DOMContentLoaded', function() {
+        // Обработка кнопки редактирования
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                const commentBody = document.querySelector(`#comment-${commentId} .comment-body p`).textContent;
+
+                // Заполняем форму модального окна
+                document.getElementById('editCommentBody').value = commentBody;
+                document.getElementById('editCommentForm').action = `/comments/${commentId}`;
+
+                // Показываем модальное окно
+                $('#editCommentModal').modal('show');
+            });
+        });
+
+        // Обработка отправки формы редактирования через AJAX
+        document.getElementById('editCommentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = this;
+            const formData = new FormData(form);
+            const url = form.action;
+
+            fetch(url, {
+                method: 'POST', // Но мы используем метод PUT, поэтому добавим _method
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Закрываем модальное окно
+                        $('#editCommentModal').modal('hide');
+                        // Обновляем комментарий на странице
+                        const commentElement = document.querySelector(`#comment-${data.comment.id} .comment-body p`);
+                        commentElement.textContent = data.comment.body;
+                        // Можно показать сообщение об успехе
+                        alert('Комментарий обновлен!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ошибка при обновлении комментария.');
+                });
         });
     });
 </script>

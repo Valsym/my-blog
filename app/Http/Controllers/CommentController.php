@@ -97,7 +97,10 @@ class CommentController extends Controller
         $comment->update($validated);
 
         if ($request->ajax()) {
-            return response()->json($comment);
+            return response()->json([
+                'success' => true,
+                'comment' => $comment
+            ]);
         }
 
         return back()->with('success', 'Комментарий обновлен!');
