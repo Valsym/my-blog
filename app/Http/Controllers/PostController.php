@@ -117,6 +117,21 @@ class PostController extends SiteController
      */
     public function show(int $id)//Post $post)
     {
+        $post = Post::where('id', $id)->first();
+        $post = $post
+            ->load('user', 'tags', 'comments.user', 'comments.replies.user');
+
+        return view('posts.show', compact('post'));
+
+        $query = Post::with(
+            ['user', 'tags', 'comments.user', 'comments.replies.user']
+        );
+
+        $post = $query->findOrFail($id);
+
+//        $post->load(['user', 'comments.user', 'comments.replies.user']);
+        return view('posts.show', compact('post'));
+
         $post = Post::findOrFail($id);//->load("comments.user");
 //        $posts = Post::with(["user", "tags", "comments"])->get();
         return view("posts.show", compact("post"));

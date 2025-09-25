@@ -19,6 +19,11 @@ class Post extends Model
         'published'
     ];
 
+    public static function findOrFail(int $id)
+    {
+        //
+    }
+
     /**
      * Post принадлежит одному User'у
      *
