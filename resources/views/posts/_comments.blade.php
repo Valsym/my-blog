@@ -106,12 +106,12 @@
                 document.getElementById('editCommentForm').action = editUrl;
 
                 // Показываем модальное окно
-                $('#editCommentModal').modal('show');
+                //$('#editCommentModal').modal('show');
             });
         });
 
         // Обработка отправки формы редактирования
-        document.getElementById('editCommentForm').addEventListener('submit', function(e) {
+        /*document.getElementById('editCommentForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
             const form = this;
@@ -158,7 +158,7 @@
                     submitButton.disabled = false;
                     submitButton.textContent = 'Сохранить изменения';
                 });
-        });
+        });*/
     });
 </script>
 <!--<script>

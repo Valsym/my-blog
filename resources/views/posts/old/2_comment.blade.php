@@ -39,21 +39,6 @@
                     </form>
                 @endcan
             </div>
-            <!-- Форма редактирования (изначально скрыта) -->
-            <div id="edit-form-{{ $comment->id }}" style="display: none;" class="mt-2">
-                <form action="{{ route('comments.update', $comment) }}" method="POST" class="edit-comment-form">
-                    @csrf
-                    @method('PUT')
-                    <div class="form-group mb-2">
-                        <textarea name="body" rows="3" class="form-control">{{ $comment->body }}</textarea>
-                    </div>
-                    <div class="d-flex">
-                        <button type="submit" class="btn btn-sm btn-primary mr-1">Сохранить</button>
-                        <button type="button" class="cancel-edit btn btn-sm btn-secondary"
-                                data-comment-id="{{ $comment->id }}">Отмена</button>
-                    </div>
-                </form>
-            </div>
         @endauth
     </div>
 
@@ -107,31 +92,3 @@
         border-left: 2px solid #dee2e6 !important;
     }
 </style>
-
-<script>
-    // Обработка кнопки редактирования (inline версия)
-    document.querySelectorAll('.edit-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const commentId = this.dataset.commentId;
-            const commentBody = this.closest('.comment-item').querySelector('.comment-body');
-            const editForm = document.getElementById(`edit-form-${commentId}`);
-
-            // Скрываем тело комментария, показываем форму редактирования
-            commentBody.style.display = 'none';
-            editForm.style.display = 'block';
-        });
-    });
-
-    // Обработка отмены редактирования
-    document.querySelectorAll('.cancel-edit').forEach(button => {
-        button.addEventListener('click', function() {
-            const commentId = this.dataset.commentId;
-            const commentBody = this.closest('.comment-item').querySelector('.comment-body');
-            const editForm = document.getElementById(`edit-form-${commentId}`);
-
-            // Показываем тело комментария, скрываем форму
-            commentBody.style.display = 'block';
-            editForm.style.display = 'none';
-        });
-    });
-</script>
