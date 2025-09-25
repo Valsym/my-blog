@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use League\CommonMark\CommonMarkConverter;
 
 class Comment extends Model
 {
@@ -19,6 +20,16 @@ class Comment extends Model
     ];
 
     protected $with = ['user', 'replies'];
+
+    public function getBodyHtmlAttribute()
+    {
+        $converter = new CommonMarkConverter([
+            'html_input' => 'strip',
+            'allow_unsafe_links' => false,
+        ]);
+
+        return $converter->convertToHtml($this->body);
+    }
 
     /**
      * Пользователь, оставивший комментарий

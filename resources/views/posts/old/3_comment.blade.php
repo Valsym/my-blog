@@ -41,11 +41,11 @@
             </div>
             <!-- Форма редактирования (изначально скрыта) -->
             <div id="edit-form-{{ $comment->id }}" style="display: none;" class="mt-2">
-                <form action="{{ route('comments.update', $comment) }}" method="POST">
+                <form action="{{ route('comments.update', $comment) }}" method="POST" class="edit-comment-form">
                     @csrf
                     @method('PUT')
                     <div class="form-group mb-2">
-                        <textarea name="body" rows="5" class="form-control">{{ $comment->body }}</textarea>
+                        <textarea name="body" rows="3" class="form-control">{{ $comment->body }}</textarea>
                     </div>
                     <div class="d-flex">
                         <button type="submit" class="btn btn-sm btn-primary mr-1">Сохранить</button>
@@ -115,36 +115,6 @@
 </style>
 
 <script>
-    // Простой JavaScript без AJAX
-    document.addEventListener('DOMContentLoaded', function() {
-        // Обработка кнопки редактирования
-        document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                const commentId = this.dataset.commentId;
-                const commentBody = this.closest('.comment-item').querySelector('.comment-body');
-                const editForm = document.getElementById(`edit-form-${commentId}`);
-
-                commentBody.style.display = 'none';
-                editForm.style.display = 'block';
-            });
-        });
-
-        // Обработка отмены редактирования
-        document.querySelectorAll('.cancel-edit').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                const commentId = this.dataset.commentId;
-                const commentBody = this.closest('.comment-item').querySelector('.comment-body');
-                const editForm = document.getElementById(`edit-form-${commentId}`);
-
-                commentBody.style.display = 'block';
-                editForm.style.display = 'none';
-            });
-        });
-    });
-</script>
-<!--<script>
     // Обработка кнопки редактирования (inline версия)
     document.querySelectorAll('.edit-btn').forEach(button => {
         button.addEventListener('click', function() {
@@ -243,4 +213,4 @@
         });
     });
 
-</script>-->
+</script>

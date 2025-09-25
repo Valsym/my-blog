@@ -86,7 +86,7 @@ class CommentController extends Controller
     /**
      * Обновление комментария
      */
-    public function update(Request $request, Comment $comment)
+    public function update0(Request $request, Comment $comment)
     {
         $this->authorize('update', $comment);
 
@@ -101,6 +101,70 @@ class CommentController extends Controller
                 'success' => true,
                 'message' => 'Комментарий обновлен!',
                 'comment' => $comment
+            ]);
+        }
+
+        return back()->with('success', 'Комментарий обновлен!');
+    }
+    public function update1(Request $request, Comment $comment)
+    {
+        $this->authorize('update', $comment);
+
+        $validated = $request->validate([
+            'body' => 'required|min:3|max:5000'
+        ]);
+
+        $comment->update($validated);
+
+        // Пересоздаем HTML после обновления
+        $converter = new \League\CommonMark\CommonMarkConverter();
+        $bodyHtml = $converter->convertToHtml($comment->body);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Комментарий обновлен!',
+                'comment' => [
+                    'id' => $comment->id,
+                    'body' => $comment->body,
+                    'body_html' => $bodyHtml
+                ]
+            ]);
+        }
+
+        return back()->with('success', 'Комментарий обновлен!');
+    }
+
+    public function update(Request $request, Comment $comment)
+    {
+        $this->authorize('update', $comment);
+
+        $validated = $request->validate([
+            'body' => 'required|min:3|max:5000'
+        ]);
+
+        $comment->update($validated);
+
+        // Пересоздаем HTML после обновления
+        $converter = new \League\CommonMark\CommonMarkConverter();
+        $bodyHtml = $converter->convertToHtml($comment->body)->getContent();
+
+        // Логируем данные для отладки
+//        \Log::info('Comment update response:', [
+//            'comment_id' => $comment->id,
+//            'body' => $comment->body,
+//            'body_html' => $bodyHtml
+//        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Комментарий обновлен!',
+                'comment' => [
+                    'id' => $comment->id,
+                    'body' => $comment->body,
+                    'body_html' => $bodyHtml
+                ]
             ]);
         }
 
