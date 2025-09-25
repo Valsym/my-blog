@@ -79,6 +79,97 @@
                 const form = document.getElementById(`reply-form-${commentId}`);
                 if (form) {
                     form.style.display = form.style.display === 'none' ? 'block' : 'none';
+                }
+            });
+        });
+
+        // Обработка отмены ответа
+        document.querySelectorAll('.cancel-reply').forEach(button => {
+            button.addEventListener('click', function() {
+                const form = this.closest('.comment-reply-form');
+                if (form) {
+                    form.style.display = 'none';
+                }
+            });
+        });
+
+        // ОБРАБОТКА РЕДАКТИРОВАНИЯ КОММЕНТАРИЕВ
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                const commentBody = this.closest('.comment-item')
+                    .querySelector('.comment-body p').textContent;
+                const editUrl = "{{ route('comments.update', ':id') }}".replace(':id', commentId);
+
+                // Заполняем форму редактирования
+                document.getElementById('editCommentBody').value = commentBody.trim();
+                document.getElementById('editCommentForm').action = editUrl;
+
+                // Показываем модальное окно
+                $('#editCommentModal').modal('show');
+            });
+        });
+
+        // Обработка отправки формы редактирования
+        document.getElementById('editCommentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = this;
+            const formData = new FormData(form);
+            const url = form.action;
+
+            // Блокируем кнопку отправки
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Сохранение...';
+
+            fetch(url, {
+                method: 'POST', // Laravel ожидает POST для PUT через метод spoofing
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Network response was not ok.');
+                })
+                .then(data => {
+                    // Закрываем модальное окно
+                    $('#editCommentModal').modal('hide');
+
+                    // Обновляем комментарий на странице
+                    const commentElement = document.querySelector(`#comment-${data.comment.id} .comment-body p`);
+                    if (commentElement) {
+                        commentElement.textContent = data.comment.body;
+                    }
+
+                    // Показываем сообщение об успехе
+                    alert('Комментарий успешно обновлен!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ошибка при обновлении комментария.');
+                })
+                .finally(() => {
+                    // Разблокируем кнопку
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Сохранить изменения';
+                });
+        });
+    });
+</script>
+<!--<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Обработка ответов на комментарии
+        document.querySelectorAll('.reply-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                const form = document.getElementById(`reply-form-${commentId}`);
+                if (form) {
+                    form.style.display = form.style.display === 'none' ? 'block' : 'none';
                     form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
             });
@@ -157,3 +248,4 @@
         });
     });
 </script>
+-->

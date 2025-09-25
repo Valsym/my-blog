@@ -99,6 +99,7 @@ class CommentController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
+                'message' => 'Комментарий обновлен!',
                 'comment' => $comment
             ]);
         }
