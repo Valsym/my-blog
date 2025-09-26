@@ -44,10 +44,14 @@
 
     <!-- Список комментариев -->
     <div class="comments-list">
-        <!-- Только одобренные комментарии ->approved() -->
-        @foreach($post->comments()->get() as $comment)
+        <!-- Только одобренные комментарии -->
+        @foreach($post->comments()->approved()->get() as $comment)
             @include('posts._comment', ['comment' => $comment, 'depth' => 0])
         @endforeach
+
+        <!--Было @ (убрать пробел)foreach($post->comments as $comment)
+            Было @ (убрать пробел)include('posts._comment', ['comment' => $comment, 'depth' => 0])
+        @endforeach-->
 
         @if($post->comments->isEmpty())
             <p class="text-muted">Пока нет комментариев. Будьте первым!</p>
