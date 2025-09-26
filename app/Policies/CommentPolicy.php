@@ -34,7 +34,7 @@ class CommentPolicy
 
     public function moderate(User $user): bool
     {
-        return $user->is_admin || $user->hasRole('moderator');
+        return $user->is_admin || $user->isModerator();
     }
 
     public function viewAny(User $user): bool
@@ -49,22 +49,22 @@ class CommentPolicy
 
     public function update(User $user, Comment $comment): bool
     {
-        return $user->id === $comment->user_id || $this->moderate($user);
+        return $user->id === $comment->user_id || $user->isModerator();
     }
 
     public function delete(User $user, Comment $comment): bool
     {
-        return $user->id === $comment->user_id || $this->moderate($user) || $user->is_admin;
+        return $user->id === $comment->user_id || $user->isModerator() || $user->is_admin;
     }
 
     public function approve(User $user, Comment $comment): bool
     {
-        return $this->moderate($user);
+        return $user->isModerator();
     }
 
     public function reject(User $user, Comment $comment): bool
     {
-        return $this->moderate($user);
+        return $user->isModerator();
     }
 
 }
