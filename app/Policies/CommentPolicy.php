@@ -9,43 +9,11 @@ use Illuminate\Auth\Access\Response;
 class CommentPolicy
 {
     /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Comment $comment): bool
-    {
-        return false;
-    }
-
-    /**
      * Determine whether the user can create models.
      */
     public function create(User $user): bool
     {
         return false;
-    }
-
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Comment $comment): bool
-    {
-        return $user->id === $comment->user_id;
-    }
-
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Comment $comment): bool
-    {
-        return $user->id === $comment->user_id || $user->is_admin;
     }
 
     /**
@@ -63,4 +31,40 @@ class CommentPolicy
     {
         return false;
     }
+
+    public function moderate(User $user): bool
+    {
+        return $user->is_admin || $user->hasRole('moderator');
+    }
+
+    public function viewAny(User $user): bool
+    {
+        return $this->moderate($user);
+    }
+
+    public function view(User $user, Comment $comment): bool
+    {
+        return $this->moderate($user);
+    }
+
+    public function update(User $user, Comment $comment): bool
+    {
+        return $user->id === $comment->user_id || $this->moderate($user);
+    }
+
+    public function delete(User $user, Comment $comment): bool
+    {
+        return $user->id === $comment->user_id || $this->moderate($user) || $user->is_admin;
+    }
+
+    public function approve(User $user, Comment $comment): bool
+    {
+        return $this->moderate($user);
+    }
+
+    public function reject(User $user, Comment $comment): bool
+    {
+        return $this->moderate($user);
+    }
+
 }
