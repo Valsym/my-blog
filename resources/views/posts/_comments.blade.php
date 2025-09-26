@@ -21,14 +21,14 @@
                 <button type="submit" class="btn btn-primary">
                     Оставить комментарий
                 </button>
-                <small class="text-muted">
+                <p><small class="text-muted">
                     <strong>Поддерживается Markdown:</strong><br>
                     **жирный текст**<br>
                     *курсив*<br>
                     `код`<br>
                     [ссылка](https://example.com)<br>
                     > цитата
-                </small>
+                </small></p>
             </form>
         </div>
     @else

@@ -88,6 +88,15 @@
                         <button type="button" class="cancel-reply btn btn-sm btn-secondary">
                             Отмена
                         </button>
+                        <p><small class="text-muted">
+                                <strong>Поддерживается Markdown:</strong><br>
+                                **жирный текст**<br>
+                                *курсив*<br>
+                                `код`<br>
+                                [ссылка](https://example.com)<br>
+                                > цитата
+                            </small>
+                        </p>
                     </div>
                 </form>
             </div>
