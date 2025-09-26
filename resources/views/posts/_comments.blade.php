@@ -13,6 +13,10 @@
                     <textarea name="body" id="body" rows="3"
                               class="form-control"
                               placeholder="Напишите ваш комментарий..."></textarea>
+                    <small class="form-text text-muted">
+                        Комментарии проходят модерацию. Спам и оскорбления будут удалены.
+                    </small>
+
                     @error('body')
                     <span class="text-danger small">{{ $message }}</span>
                     @enderror
@@ -40,7 +44,8 @@
 
     <!-- Список комментариев -->
     <div class="comments-list">
-        @foreach($post->comments as $comment)
+        <!-- Только одобренные комментарии ->approved() -->
+        @foreach($post->comments()->get() as $comment)
             @include('posts._comment', ['comment' => $comment, 'depth' => 0])
         @endforeach
 
