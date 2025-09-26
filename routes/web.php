@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SiteController;
+use App\Http\Controllers\Admin\CommentModerationController;
 use Illuminate\Support\Facades\Route;
 
 // Маршруты для сайта
@@ -98,3 +99,11 @@ Route::prefix('/comments')->group(function () {
         ->name('comments.destroy');
 });
 
+// Маршруты модерации
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'can:moderate comments'])->group(function () {
+    Route::get('/comments', [CommentModerationController::class, 'index'])->name('comments.index');
+    Route::get('/comments/{comment}', [CommentModerationController::class, 'show'])->name('comments.show');
+    Route::post('/comments/{comment}/approve', [CommentModerationController::class, 'approve'])->name('comments.approve');
+    Route::post('/comments/{comment}/reject', [CommentModerationController::class, 'reject'])->name('comments.reject');
+    Route::post('/comments/bulk-action', [CommentModerationController::class, 'bulkAction'])->name('comments.bulk-action');
+});
