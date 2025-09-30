@@ -20,17 +20,20 @@ Route::prefix('admin')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login']);
 
     // Защита маршрутов админки
-    Route::middleware('admin')->group(function () {
+    Route::middleware('auth')->group(function () {
 //        Route::get('/news/create', [NewsController::class, 'create'])->name('admin.news.create');
 //        Route::post('/news', [NewsController::class, 'store'])->name('admin.news.store');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
-        Route::get("/posts/create", [PostController::class, "create"])->name('admin.posts.create');
-        Route::post("/posts/store", [PostController::class, "store"])->name('admin.posts.store');
+        Route::middleware('admin')->group(function () { // работает!!! 26/09
+            Route::get("/posts/create", [PostController::class, "create"])->name('admin.posts.create');
+            Route::post("/posts/store", [PostController::class, "store"])->name('admin.posts.store');
 //        Route::get("/posts/{id}", [PostController::class, "show"])->name('posts.show');
-        Route::get("/posts/{id}/edit", [PostController::class, "edit"]);
-        Route::put("/posts/{id}", [PostController::class, "update"]);
-        Route::delete("/posts/{id}", [PostController::class, "destroy"]);
+            Route::get("/posts/{id}/edit", [PostController::class, "edit"]);
+            Route::put("/posts/{id}", [PostController::class, "update"]);
+            Route::delete("/posts/{id}", [PostController::class, "destroy"]);
+//        Route::get('/comments', [CommentModerationController::class, 'index'])->name('admin.comments.index');
+        });
     });
 });
 //Route::get("/", function () {
@@ -100,10 +103,29 @@ Route::prefix('/comments')->group(function () {
 });
 
 // Маршруты модерации
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'can:moderate comments'])->group(function () {
+// было... стало:
+// Маршруты модерации - используем более конкретный gate
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'/*'can:moderate'/*'can:view comment moderation'*/])->group(function () {
     Route::get('/comments', [CommentModerationController::class, 'index'])->name('comments.index');
     Route::get('/comments/{comment}', [CommentModerationController::class, 'show'])->name('comments.show');
-    Route::post('/comments/{comment}/approve', [CommentModerationController::class, 'approve'])->name('comments.approve');
-    Route::post('/comments/{comment}/reject', [CommentModerationController::class, 'reject'])->name('comments.reject');
-    Route::post('/comments/bulk-action', [CommentModerationController::class, 'bulkAction'])->name('comments.bulk-action');
+
+    // Защищаем отдельные действия более специфичными gates
+//    Route::middleware('can:approve comments')->group(function () {
+        Route::post('/comments/{comment}/approve', [CommentModerationController::class, 'approve'])->name('comments.approve');
+//    });
+
+//    Route::/*middleware('can:reject comments')->*/group(function () {
+        Route::post('/comments/{comment}/reject', [CommentModerationController::class, 'reject'])->name('comments.reject');
+        Route::post('/comments/bulk-action', [CommentModerationController::class, 'bulkAction'])->name('comments.bulk-action');
+//    });
 });
+
+// Временное решение - закомментируйте сложную проверку
+//Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+// Или проверяйте просто на is_admin
+//    Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+//        Route::get('/comments', [CommentModerationController::class, 'index'])
+//            ->name('comments.index')
+//            ->middleware('can:is_admin'); // если у вас есть такой gate
+//    });
+//Route::middleware(['auth', 'admin'])->get('admin/comments', [CommentModerationController::class, 'index'])->name('admin.comments.index');

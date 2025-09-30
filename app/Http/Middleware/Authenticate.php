@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -8,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\User;
 
-class CheckAdminMiddleware
+class Authenticate
 {
 
     /**
@@ -21,17 +22,14 @@ class CheckAdminMiddleware
      */
     public function handle(Request $request, Closure $next)//, string $role): Response
     {
-        if (session('is_admin') || session('is_moderator')) {
-            return $next($request);
-
+        //check here if the user is authenticated
+//        if ( ! $this->auth->user() )
+        if (!$request->user()) {
+            // here you should redirect to login
+            return redirect()->route('admin.login')
+                ->with(['error', 'Требуется авторизация.']);
         }
-//          OR (не работает)
-//        if (!$request->user() || !$request->user()->isAdmin()) {
-//            return response()->json(['message' => 'Forbidden'], 403);
-//        }
-        return redirect()->route('admin.login')
-            ->with('error', 'Требуется авторизация как модератор или админ');
-
+        return $next($request);
 
     }
 }

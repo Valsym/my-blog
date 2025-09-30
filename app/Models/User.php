@@ -24,7 +24,7 @@ class User extends Authenticatable
 //        'password',
 //    ];
     protected $fillable = [ // 26/09/2025
-        'name', 'email', 'password', 'is_trusted', 'is_moderator'
+        'name', 'email', 'password', 'is_trusted', 'is_moderator', 'is_admin'
     ];
 
     /**
@@ -41,6 +41,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'is_trusted' => 'boolean',
         'is_moderator' => 'boolean',
+        'is_admin' => 'boolean',
     ];
 
     /**

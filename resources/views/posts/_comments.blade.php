@@ -37,7 +37,7 @@
         </div>
     @else
         <p class="mb-3">
-            <a href="{{ route('login') }}" class="text-primary">Войдите</a>,
+            <a href="{{ route('admin.login') }}" class="text-primary">Войдите</a>,
             чтобы оставить комментарий
         </p>
     @endauth
@@ -51,7 +51,7 @@
 
         <!--Было @ (убрать пробел)foreach($post->comments as $comment)
             Было @ (убрать пробел)include('posts._comment', ['comment' => $comment, 'depth' => 0])
-        @endforeach-->
+        @ endforeach-->
 
         @if($post->comments->isEmpty())
             <p class="text-muted">Пока нет комментариев. Будьте первым!</p>

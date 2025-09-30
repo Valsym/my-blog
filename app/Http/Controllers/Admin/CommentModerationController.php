@@ -12,7 +12,7 @@ class CommentModerationController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('can:moderate comments');
+//        $this->middleware('can:moderate comments');
     }
 
     /**
@@ -20,6 +20,11 @@ class CommentModerationController extends Controller
      */
     public function index(Request $request)
     {
+        // Временная проверка
+        if (!auth()->user()->is_admin && !auth()->user()->is_moderator) {
+            abort(403, 'Access denied.');
+        }
+
         $status = $request->get('status', 'pending');
         $perPage = 20;
 

@@ -29,6 +29,13 @@ class AdminAuthController extends Controller
 
                 return redirect()->route('admin.posts.create')
                     ->with('success', 'Вы успешно вошли в админку!');
+            } else if ($user->is_moderator) {
+                // Сохраняем информацию о том, что пользователь is_moderator
+                session(['is_moderator' => true]);
+                //dd('ok!');
+
+                return redirect()->route('admin.posts.create')
+                    ->with('success', 'Вы успешно вошли в админку!');
             } else {
                 Auth::logout();
 
@@ -42,7 +49,7 @@ class AdminAuthController extends Controller
 
     public function logout()
     {
-        session()->forget('is_admin'); // Удаляем сессию
+        session()->forget(['is_admin', 'is_moderator']); // Удаляем сессию
         return redirect('/')->with('success', 'Вы вышли из админки!');
     }
 }
