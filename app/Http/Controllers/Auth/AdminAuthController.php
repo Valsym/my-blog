@@ -52,4 +52,15 @@ class AdminAuthController extends Controller
         session()->forget(['is_admin', 'is_moderator']); // Удаляем сессию
         return redirect('/')->with('success', 'Вы вышли из админки!');
     }
+
+    /**
+     * Регистрация юзера
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function register(Request $request)
+    {
+        //
+    }
 }

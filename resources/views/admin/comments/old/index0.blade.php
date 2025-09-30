@@ -132,28 +132,34 @@
                                                 </td>
                                                 <td>{{ $comment->created_at->format('d.m.Y H:i') }}</td>
                                                 <td>
+                                                    <!-- Кнопки действий для отдельных комментариев -->
                                                     <div class="btn-group btn-group-sm">
                                                         <a href="{{ route('admin.comments.show', $comment) }}"
                                                            class="btn btn-info" title="Просмотр">
                                                             👁️
                                                         </a>
                                                         @if($comment->isPending())
-                                                            <!-- Кнопка одобрения без формы -->
-                                                            <button type="button" class="btn btn-success approve-single-btn"
-                                                                    data-comment-id="{{ $comment->id }}" title="Одобрить">
-                                                                ✓
-                                                            </button>
-                                                            <!-- Кнопка отклонения без формы -->
+                                                            <form action="{{ route('admin.comments.approve', $comment) }}"
+                                                                  method="POST" class="d-inline">
+                                                                @csrf
+                                                                <button type="submit" class="btn btn-success" title="Одобрить">
+                                                                    ✓
+                                                                </button>
+                                                            </form>
                                                             <button type="button" class="btn btn-danger reject-btn"
                                                                     data-comment-id="{{ $comment->id }}" title="Отклонить">
                                                                 ✗
                                                             </button>
                                                         @endif
-                                                        <!-- Кнопка удаления без формы -->
-                                                        <button type="button" class="btn btn-dark delete-single-btn"
-                                                                data-comment-id="{{ $comment->id }}" title="Удалить">
-                                                            🗑️
-                                                        </button>
+                                                        <form action="{{ route('comments.destroy', $comment) }}"
+                                                              method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-dark"
+                                                                    onclick="return confirm('Удалить комментарий?')" title="Удалить">
+                                                                🗑️
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -203,35 +209,16 @@
             </div>
         </div>
     </div>
-
-    <style>
-        .bulk-actions {
-            transition: all 0.3s ease;
-        }
-
-        .comment-checkbox {
-            cursor: pointer;
-        }
-
-        .table-hover tbody tr:hover {
-            background-color: rgba(0,0,0,.075);
-        }
-
-        #select-all {
-            cursor: pointer;
-        }
-    </style>
-
 @endsection
 
 @section('scripts')
     <script>
         // Добавьте в начало скрипта для отладки
-        // console.log('Script loaded');
-        // console.log('Select All:', document.getElementById('select-all'));
-        // console.log('Comment checkboxes:', document.querySelectorAll('.comment-checkbox').length);
-        // console.log('Bulk actions:', document.querySelector('.bulk-actions'));
-        // console.log('Bulk form:', document.getElementById('bulk-form'));
+        console.log('Script loaded');
+        console.log('Select All:', document.getElementById('select-all'));
+        console.log('Comment checkboxes:', document.querySelectorAll('.comment-checkbox').length);
+        console.log('Bulk actions:', document.querySelector('.bulk-actions'));
+        console.log('Bulk form:', document.getElementById('bulk-form'));
 
         document.addEventListener('DOMContentLoaded', function() {
             // Элементы DOM
@@ -317,70 +304,51 @@
                 });
             });
         });
+    </script>
 
-        // Обработка одиночного одобрения
-        document.querySelectorAll('.approve-single-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const commentId = this.dataset.commentId;
-                if (confirm('Одобрить этот комментарий?')) {
-                    // Создаем временную форму для отправки
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `/admin/comments/${commentId}/approve`;
-
-                    const csrfToken = document.createElement('input');
-                    csrfToken.type = 'hidden';
-                    csrfToken.name = '_token';
-                    csrfToken.value = document.querySelector('meta[name="csrf-token"]').content;
-
-                    form.appendChild(csrfToken);
-                    document.body.appendChild(form);
-                    form.submit();
-                }
+    <!--   <script>
+        // Пакетные действия
+        document.getElementById('select-all').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.comment-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
             });
+            toggleBulkActions();
         });
 
-        // Обработка одиночного удаления
-        document.querySelectorAll('.delete-single-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const commentId = this.dataset.commentId;
-                if (confirm('Удалить этот комментарий?')) {
-                    // Создаем временную форму для отправки
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `/comments/${commentId}`;
-
-                    const csrfToken = document.createElement('input');
-                    csrfToken.type = 'hidden';
-                    csrfToken.name = '_token';
-                    csrfToken.value = document.querySelector('meta[name="csrf-token"]').content;
-
-                    const methodInput = document.createElement('input');
-                    methodInput.type = 'hidden';
-                    methodInput.name = '_method';
-                    methodInput.value = 'DELETE';
-
-                    form.appendChild(csrfToken);
-                    form.appendChild(methodInput);
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
+        document.querySelectorAll('.comment-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', toggleBulkActions);
         });
 
-        // Обработка модального окна отклонения (уже есть, но на всякий случай оставляем)
+        function toggleBulkActions() {
+            const checkedCount = document.querySelectorAll('.comment-checkbox:checked').length;
+            const bulkActions = document.querySelector('.bulk-actions');
+            bulkActions.style.display = checkedCount > 0 ? 'block' : 'none';
+        }
+
+        function setBulkAction(action) {
+            document.getElementById('bulk-action').value = action;
+            if (confirm(`Вы уверены, что хотите ${action} выбранные комментарии?`)) {
+                document.getElementById('bulk-form').submit();
+            }
+        }
+
+        function clearSelection() {
+            document.querySelectorAll('.comment-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            toggleBulkActions();
+        }
+
+        // Отклонение комментария
         document.querySelectorAll('.reject-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const commentId = this.dataset.commentId;
                 const form = document.getElementById('reject-form');
-                if (form) {
-                    form.action = `/admin/comments/${commentId}/reject`;
-                    $('#rejectModal').modal('show');
-                }
+                form.action = `/admin/comments/${commentId}/reject`;
+                $('#rejectModal').modal('show');
             });
         });
-    </script>
-
-
+    </script>-->
 @endsection
 
