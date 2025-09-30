@@ -14,7 +14,8 @@ Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
 Route::post('/contact', [SiteController::class, 'submitContactForm'])->name('contact.submit');
 
 // Маршруты для админки
-Route::post('/register', [AdminAuthController::class, 'register'])->name('auth.register');
+Route::get('/register', [AdminAuthController::class, 'showRgisterForm'])->name('auth.register');
+Route::post('/register', [AdminAuthController::class, 'register']);
 
 Route::prefix('admin')->group(function () {
     // Маршруты для входа
@@ -25,7 +26,7 @@ Route::prefix('admin')->group(function () {
     Route::middleware('auth')->group(function () {
 //        Route::get('/news/create', [NewsController::class, 'create'])->name('admin.news.create');
 //        Route::post('/news', [NewsController::class, 'store'])->name('admin.news.store');
-        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+        Route::get('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
         Route::middleware('admin')->group(function () { // работает!!! 26/09
             Route::get("/posts/create", [PostController::class, "create"])->name('admin.posts.create');

@@ -30,7 +30,17 @@
             </li>
             @auth
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.logout') }}">Logout</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{{ route('admin.comments.index') }}">Модерация коментов</a>
+                </li>
+            @else
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.login') }}">Войти</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('auth.register') }}">Регистрация</a>
                 </li>
             @endauth
         </ul>

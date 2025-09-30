@@ -31,6 +31,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('admin.comments.index') }}">Модерация коментов</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.logout') }}">Logout</a>
+            </li>
         </ul>
     </div>
 </nav>
