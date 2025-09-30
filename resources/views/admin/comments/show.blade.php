@@ -9,7 +9,7 @@
                 <h1>Модерация комментария</h1>
 
                 <!-- Секция комментария -->
-                @include('posts._comment', ['comment' => $comment, 'depth' => 0]);
+                @include('posts._comment', ['comment' => $comment, 'depth' => 0, 'adminView' => true])
 
 @endsection
 

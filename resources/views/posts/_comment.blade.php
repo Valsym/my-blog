@@ -1,5 +1,7 @@
 @php
     $maxDepth = 5; // Максимальная глубина вложенности
+// Если не передана переменная $adminView, по умолчанию false
+    $adminView = $adminView ?? false;
 @endphp
 
 <div class="comment-item mb-3 p-3 bg-light rounded" id="comment-{{ $comment->id }}">
@@ -9,6 +11,13 @@
             <span class="text-muted small ml-2">
                 {{ $comment->created_at->diffForHumans() }}
             </span>
+            @if($adminView)
+                <div class="mt-1">
+                    <span class="badge badge-{{ $comment->status === 'approved' ? 'success' : ($comment->status === 'rejected' ? 'danger' : 'warning') }}">
+                        {{ $comment->status }}
+                    </span>
+                </div>
+            @endif
         </div>
 
         @auth
@@ -53,6 +62,15 @@
                                 data-comment-id="{{ $comment->id }}">Отмена</button>
                     </div>
                 </form>
+                <!-- В админке добавляем кнопки модерации -->
+                @if($adminView && $comment->isPending())
+                    <form action="{{ route('admin.comments.approve', $comment) }}" method="POST" class="d-inline ml-1">
+                        @csrf
+                        <button type="submit" class="btn btn-success btn-sm">Одобрить</button>
+                    </form>
+                    <button type="button" class="btn btn-danger btn-sm reject-btn ml-1"
+                            data-comment-id="{{ $comment->id }}">Отклонить</button>
+                @endif
             </div>
         @endauth
     </div>
@@ -66,6 +84,19 @@
         <!-- Добавляем скрытое поле с исходным текстом Markdown -->
         <textarea class="d-none raw-comment-body">{{ $comment->body }}</textarea>
     </div>
+
+    <!-- В админке показываем информацию о модерации -->
+    @if($adminView)
+        @if($comment->moderated_by)
+            <div class="moderation-info mt-2 p-2 bg-white rounded">
+                <strong>Модератор:</strong> {{ $comment->moderator->name ?? 'N/A' }}<br>
+                <strong>Время модерации:</strong> {{ $comment->moderated_at->format('d.m.Y H:i') }}<br>
+                @if($comment->moderation_notes)
+                    <strong>Причина отклонения:</strong> {{ $comment->moderation_notes }}
+                @endif
+            </div>
+        @endif
+    @endif
 
     <!-- Форма ответа -->
     @auth
