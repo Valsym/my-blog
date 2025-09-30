@@ -92,11 +92,12 @@ class CommentModerationController extends Controller
         ]);
 
         $count = 0;
+        $action = $request->action;
 
         foreach ($request->comment_ids as $commentId) {
             $comment = Comment::find($commentId);
 
-            switch ($request->action) {
+            switch ($action) {
                 case 'approve':
                     $comment->update([
                         'status' => Comment::STATUS_APPROVED,
@@ -123,7 +124,15 @@ class CommentModerationController extends Controller
             }
         }
 
-        return back()->with('success', "Обработано комментариев: {$count}");
+//        return back()->with('success', "Обработано комментариев: {$count}");
+        $message = match($action) {
+            'approve' => "Одобрено комментариев: {$count}",
+            'reject' => "Отклонено комментариев: {$count}",
+            'delete' => "Удалено комментариев: {$count}",
+            default => "Обработано комментариев: {$count}"
+        };
+
+        return back()->with('success', $message);
     }
 
     /**

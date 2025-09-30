@@ -65,7 +65,6 @@
                     @csrf
                     <input type="hidden" name="action" id="bulk-action">
 
-                    <!-- Список комментариев -->
                     <div class="card">
                         <div class="card-header">
                             <div class="d-flex justify-content-between align-items-center">
@@ -109,7 +108,8 @@
                                         @foreach($comments as $comment)
                                             <tr>
                                                 <td>
-                                                    <input type="checkbox" name="comment_ids[]" value="{{ $comment->id }}" class="comment-checkbox">
+                                                    <input type="checkbox" name="comment_ids[]"
+                                                           value="{{ $comment->id }}" class="comment-checkbox">
                                                 </td>
                                                 <td>
                                                     <div class="comment-preview">
@@ -126,12 +126,13 @@
                                                     </a>
                                                 </td>
                                                 <td>
-                                                    <span class="badge badge-{{ $comment->status === 'approved' ? 'success' : ($comment->status === 'rejected' ? 'danger' : 'warning') }}">
-                                                        {{ $comment->status }}
-                                                    </span>
+                                        <span class="badge badge-{{ $comment->status === 'approved' ? 'success' : ($comment->status === 'rejected' ? 'danger' : 'warning') }}">
+                                            {{ $comment->status }}
+                                        </span>
                                                 </td>
                                                 <td>{{ $comment->created_at->format('d.m.Y H:i') }}</td>
                                                 <td>
+                                                    <!-- Кнопки действий для отдельных комментариев -->
                                                     <div class="btn-group btn-group-sm">
                                                         <a href="{{ route('admin.comments.show', $comment) }}"
                                                            class="btn btn-info" title="Просмотр">
@@ -212,6 +213,100 @@
 
 @section('scripts')
     <script>
+        // Добавьте в начало скрипта для отладки
+        console.log('Script loaded');
+        console.log('Select All:', document.getElementById('select-all'));
+        console.log('Comment checkboxes:', document.querySelectorAll('.comment-checkbox').length);
+        console.log('Bulk actions:', document.querySelector('.bulk-actions'));
+        console.log('Bulk form:', document.getElementById('bulk-form'));
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Элементы DOM
+            const selectAllCheckbox = document.getElementById('select-all');
+            const commentCheckboxes = document.querySelectorAll('.comment-checkbox');
+            const bulkActions = document.querySelector('.bulk-actions');
+            const bulkForm = document.getElementById('bulk-form');
+            const bulkActionInput = document.getElementById('bulk-action');
+
+            // Функция для показа/скрытия блока пакетных действий
+            function toggleBulkActions() {
+                const checkedCount = document.querySelectorAll('.comment-checkbox:checked').length;
+                if (bulkActions) {
+                    bulkActions.style.display = checkedCount > 0 ? 'block' : 'none';
+                }
+            }
+
+            // Обработчик для чекбокса "Выделить все"
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', function() {
+                    const isChecked = this.checked;
+                    commentCheckboxes.forEach(checkbox => {
+                        checkbox.checked = isChecked;
+                    });
+                    toggleBulkActions();
+                });
+            }
+
+            // Обработчики для отдельных чекбоксов
+            commentCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    // Снимаем выделение с "Выделить все", если снята одна галочка
+                    if (selectAllCheckbox && !this.checked) {
+                        selectAllCheckbox.checked = false;
+                    }
+                    toggleBulkActions();
+                });
+            });
+
+            // Функции для пакетных действий (делаем их глобальными)
+            window.setBulkAction = function(action) {
+                if (!bulkActionInput) return;
+
+                const checkedCount = document.querySelectorAll('.comment-checkbox:checked').length;
+                if (checkedCount === 0) {
+                    alert('Пожалуйста, выберите хотя бы один комментарий');
+                    return;
+                }
+
+                const actionText = {
+                    'approve': 'одобрить',
+                    'reject': 'отклонить',
+                    'delete': 'удалить'
+                }[action] || 'выполнить действие с';
+
+                if (confirm(`Вы уверены, что хотите ${actionText} выбранные комментарии (${checkedCount} шт.)?`)) {
+                    bulkActionInput.value = action;
+                    bulkForm.submit();
+                }
+            }
+
+            window.clearSelection = function() {
+                // Снимаем все галочки
+                if (selectAllCheckbox) selectAllCheckbox.checked = false;
+                commentCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                toggleBulkActions();
+            }
+
+            // Инициализация - скрываем блок пакетных действий при загрузке
+            toggleBulkActions();
+
+            // Обработка модального окна отклонения (если еще не добавлено)
+            document.querySelectorAll('.reject-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const commentId = this.dataset.commentId;
+                    const form = document.getElementById('reject-form');
+                    if (form) {
+                        form.action = `/admin/comments/${commentId}/reject`;
+                        $('#rejectModal').modal('show');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!--   <script>
         // Пакетные действия
         document.getElementById('select-all').addEventListener('change', function() {
             const checkboxes = document.querySelectorAll('.comment-checkbox');
@@ -254,6 +349,6 @@
                 $('#rejectModal').modal('show');
             });
         });
-    </script>
+    </script>-->
 @endsection
 
