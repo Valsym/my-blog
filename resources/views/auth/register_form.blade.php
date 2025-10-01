@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container">
-    <h1>Регистрация ользователя</h1>
+    <h1>Регистрация пользователя</h1>
 
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -12,7 +12,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.register') }}" method="POST">
+    <form action="{{ route('register') }}" method="POST">
         @csrf
         <div class="form-group">
             <label for="name">Имя пользователя</label>
@@ -30,7 +30,7 @@
             <label for="password_confirmation">Подтверждение пароля</label>
             <input type="password_confirmation" name="password_confirmation" id="password_confirmation" class="form-control" required>
         </div>
-        <button type="submit" class="btn btn-primary">Войти</button>
+        <button type="submit" class="btn btn-primary">Отправить</button>
     </form>
 </div>
 @endsection

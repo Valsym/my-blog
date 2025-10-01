@@ -10,19 +10,27 @@
         <div class="alert alert-danger">
             {{ $errors->first() }}
         </div>
+    @elseif (isset($success))
+        <div class="alert alert-info">
+            {{ $success }}
+        </div>
     @endif
 
-    <form action="{{ route('admin.login') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label for="email">Имя or email пользователя</label>
-            <input type="email" name="email" id="email" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label for="password">Пароль</label>
-            <input type="password" name="password" id="password" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Войти</button>
-    </form>
+    @auth()
+        <!--<p>{{-- $name --}} - Вы успешно вошли на сайт!</p>-->
+    @else
+        <form action="{{ route('admin.login') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label for="email">Имя or email пользователя</label>
+                <input type="email" name="email" id="email" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" name="password" id="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Войти</button>
+        </form>
+    @endauth
 </div>
 @endsection

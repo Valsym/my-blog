@@ -14,8 +14,8 @@ Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
 Route::post('/contact', [SiteController::class, 'submitContactForm'])->name('contact.submit');
 
 // Маршруты для админки
-Route::get('/register', [AdminAuthController::class, 'showRgisterForm'])->name('auth.register');
-Route::post('/register', [AdminAuthController::class, 'register']);
+Route::get('/register', [AdminAuthController::class, 'showRegisterForm'])->name('auth.register');
+Route::post('/register', [AdminAuthController::class, 'register'])->name('register');
 
 Route::prefix('admin')->group(function () {
     // Маршруты для входа

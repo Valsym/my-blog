@@ -42,10 +42,17 @@ class AdminAuthController extends Controller
                 return redirect()->route('admin.posts.create')
                     ->with('success', 'Вы успешно вошли в админку!');
             } else {
-                Auth::logout();
-
-                return redirect()->back()->withErrors(['email' =>
-                    'У вас нет прав администратора.']);
+//                return redirect()->route('home')
+//                  return redirect()->back()
+//                    ->with('success', $user->name.', Вы успешно вошли на сайт!');
+                return view('auth.admin_login', [
+                    'success' => $user->name.', Вы успешно вошли на сайт!',
+                    'name' => $user->name
+                    ]);
+//                Auth::logout();
+//
+//                return redirect()->back()->withErrors(['email' =>
+//                    'У вас нет прав администратора.']);
             }
         }
 
@@ -65,7 +72,7 @@ class AdminAuthController extends Controller
         session()->regenerateToken();
 
         return redirect('/home')->with('success', 'Вы вышли из админки!');
-        
+
 //        session()->forget(['is_admin', 'is_moderator']); // Удаляем сессию
 //        return redirect('/home')->with('success', 'Вы вышли из админки!');
     }
@@ -86,11 +93,11 @@ class AdminAuthController extends Controller
                 'required',
                 'confirmed',
                 Password::min(8)
-                    ->letters()
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols()
-                    ->uncompromised()
+//                    ->letters() // упрощаем для ввода, типа: password
+//                    ->mixedCase()
+//                    ->numbers()
+//                    ->symbols()
+//                    ->uncompromised()
             ],
         ], [
             'name.required' => 'Поле имя обязательно для заполнения',
@@ -122,11 +129,18 @@ class AdminAuthController extends Controller
             // Auth::login($user); // Автоматический вход после регистрации
             // event(new Registered($user)); // Отправка email подтверждения
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Пользователь успешно зарегистрирован',
-                'user' => $user
-            ], 201);
+            return view('auth.admin_login', [
+                'success' => $user->name.' - вы успешно зарегистрированы!<br>Введите ваши данные',
+//                'name' => $user->name
+            ]);
+//            return redirect()->route('admin.login')
+//                ->with('success', "Пользователь $request->name - вы успешно зарегистрированы!<br>Введите ваши данные");
+
+//            return response()->json([
+//                'success' => true,
+//                'message' => 'Пользователь успешно зарегистрирован',
+//                'user' => $user
+//            ], 201);
 
         } catch (\Exception $e) {
             // 5. Обработка ошибок базы данных
@@ -138,7 +152,7 @@ class AdminAuthController extends Controller
         }
     }
 
-    public function showRgisterForm()
+    public function showRegisterForm()
     {
         return view('auth.register_form');
     }
