@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -9,6 +10,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Post extends Model
 {
+//    protected $fillable = [
+//        'title',
+//        'content',
+//        'slug',
+//        'user_id',
+//        'excerpt',
+//        'views',
+//        'published'
+//    ];
+    use HasFactory;
+
     protected $fillable = [
         'title',
         'content',
@@ -16,8 +28,20 @@ class Post extends Model
         'user_id',
         'excerpt',
         'views',
-        'published'
+        'published',
+        'created_at',
+        'updated_at'
     ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    // Константы для статусов
+    const STATUS_PUBLISHED = 'published';
+    const STATUS_MODERATION = 'moderation';
+    const STATUS_DRAFT = 'draft';
 
     public static function findOrFail(int $id)
     {
@@ -61,5 +85,15 @@ class Post extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
+
+    // Scope для опубликованных постов
+    public function scopePublished($query)
+    {
+        return $query->where('published', self::STATUS_PUBLISHED);
+    }
 
 }
