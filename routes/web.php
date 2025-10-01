@@ -29,13 +29,15 @@ Route::prefix('admin')->group(function () {
         Route::get('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
         Route::middleware('admin')->group(function () { // работает!!! 26/09
-            Route::get("/posts/create", [PostController::class, "create"])->name('admin.posts.create');
-            Route::post("/posts/store", [PostController::class, "store"])->name('admin.posts.store');
-//        Route::get("/posts/{id}", [PostController::class, "show"])->name('posts.show');
-            Route::get("/posts/{id}/edit", [PostController::class, "edit"]);
-            Route::put("/posts/{id}", [PostController::class, "update"]);
-            Route::delete("/posts/{id}", [PostController::class, "destroy"]);
-//        Route::get('/comments', [CommentModerationController::class, 'index'])->name('admin.comments.index');
+            // Админка постов 01/10/2025
+            Route::resource('posts', \App\Http\Controllers\Admin\PostController::class);
+
+            //            Route::get("/posts/create", [PostController::class, "create"])->name('admin.posts.create');
+//            Route::post("/posts/store", [PostController::class, "store"])->name('admin.posts.store');
+////        Route::get("/posts/{id}", [PostController::class, "show"])->name('posts.show');
+//            Route::get("/posts/{id}/edit", [PostController::class, "edit"]);
+//            Route::put("/posts/{id}", [PostController::class, "update"]);
+//            Route::delete("/posts/{id}", [PostController::class, "destroy"]);
         });
     });
 });
