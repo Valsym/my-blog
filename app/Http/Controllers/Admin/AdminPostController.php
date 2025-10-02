@@ -90,9 +90,9 @@ class AdminPostController extends Controller
     public function update(Request $request, Post $post)
     {
 //        dd($request->all()); // отладка
-//        Log::debug('=== UPDATE METHOD STARTED ===');
-//        Log::debug('Request data:', $request->all());
-//        Log::debug('Post ID:', ['id' => $post->id]);
+        Log::debug('=== UPDATE METHOD STARTED ===');
+        Log::debug('Request data:', $request->all());
+        Log::debug('Post ID:', ['id' => $post->id]);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -107,8 +107,8 @@ class AdminPostController extends Controller
             'updated_at' => 'nullable|date',
         ]);
 
-//        Log::debug('Validated data:', $validated);
-//        Log::debug('Before update');
+        Log::debug('Validated data:', $validated);
+        Log::debug('Before update');
 
         $post->update([
             'title' => $validated['title'],
@@ -118,40 +118,17 @@ class AdminPostController extends Controller
             'created_at' => $validated['created_at'],
             'updated_at' => $validated['updated_at'],
         ]);
-//        Log::debug('After update');
-//        Log::debug('Post after update', $post->toArray());
-//        // Проверим, обновилась ли запись
-//        $updatedPost = Post::find($post->id);
-//        Log::debug('Updated post:', [
-//            'title' => $updatedPost->title,
-//            'content_length' => strlen($updatedPost->content)
-//        ]);
+        Log::debug('After update');
+        Log::debug('Post after update', $post->toArray());
+        // Проверим, обновилась ли запись
+        $updatedPost = Post::find($post->id);
+        Log::debug('Updated post:', [
+            'title' => $updatedPost->title,
+            'content_length' => strlen($updatedPost->content)
+        ]);
         // Синхронизируем категории и теги
         $post->categories()->sync($request->input('categories', []));
         $post->tags()->sync($request->input('tags', []));
-
-        return redirect()->route('admin.posts.index')
-            ->with('success', 'Пост успешно обновлен!');
-    }
-
-    public function update1(Request $request, Post $post)
-    {
-        Log::debug('=== SIMPLIFIED UPDATE ===');
-        Log::debug('Request data:', $request->all());
-
-        // Простейшая валидация
-        $request->validate([
-            'title' => 'required',
-            'content' => 'required',
-        ]);
-
-        // Простое обновление
-        $post->title = $request->title;
-        $post->content = $request->input('content');//$request->content;
-        $post->save();
-        Log::debug('Post after save', $post->toArray());
-
-//        Log::debug('Post saved:', ['id' => $post->id, 'title' => $post->title]);
 
         return redirect()->route('admin.posts.index')
             ->with('success', 'Пост успешно обновлен!');

@@ -47,7 +47,7 @@ class Post extends Model
     public function setContentAttribute($value)
     {
         // Очистка от потенциально опасного HTML, если нужно
-//        $this->attributes['content'] = $value;
+        $this->attributes['content'] = $value;
     }
 
     public static function findOrFail(int $id)
