@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
     <form action="{{ isset($post) ? route('admin.posts.update', $post) : route('admin.posts.store') }}" method="POST">
@@ -164,3 +164,86 @@
     </div>
     </form>
 @endsection
+
+@section('scripts')
+    <script src="https://cdn.tiny.cloud/1/xbk824yn8ekm6yvxt7xtssq0xcinql3qs1fthhwgrebotbeh/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            tinymce.init({
+                selector: 'textarea#content',
+                plugins: 'advlist autolink lists link image charmap preview anchor pagebreak',
+                toolbar_mode: 'floating',
+                toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+                height: 500,
+                images_upload_url: '{{ route("admin.posts.upload") }}',
+                automatic_uploads: true,
+                file_picker_types: 'image',
+                images_reuse_filename: true,
+                images_upload_handler: function (blobInfo, progress) {
+                    return new Promise((resolve, reject) => {
+                        const formData = new FormData();
+                        formData.append('file', blobInfo.blob(), blobInfo.filename());
+                        formData.append('_token', '{{ csrf_token() }}');
+
+                        fetch('{{ route("admin.posts.upload") }}', {
+                            method: 'POST',
+                            body: formData
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('HTTP error: ' + response.status);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.location) {
+                                    console.log('Upload successful:', data.location);
+                                    resolve(data.location);
+                                } else {
+                                    reject(data.error || 'Upload failed');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Upload error:', error);
+                                reject('Upload failed: ' + error.message);
+                            });
+                    });
+                },
+                // setup: function (editor) {
+                //     editor.on('change', function () {
+                //         editor.save();
+                //     });
+                // }
+            });
+        });
+    </script>
+@endsection
+
+
+
+
+<!-- Place the first <script> tag in your HTML's <head> -->
+<!--<script src="https://cdn.tiny.cloud/1/xbk824yn8ekm6yvxt7xtssq0xcinql3qs1fthhwgrebotbeh/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+-->
+<!-- Place the following <script> and <textarea> tags your HTML's <body> -->
+<!--<script>
+    tinymce.init({
+        selector: 'textarea',
+        plugins: [
+            // Core editing features
+            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+            // Your account includes a free trial of TinyMCE premium features
+            // Try the most popular premium features until Oct 16, 2025:
+            'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'ai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+        ],
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+        mergetags_list: [
+            { value: 'First.Name', title: 'First Name' },
+            { value: 'Email', title: 'Email' },
+        ],
+        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+        uploadcare_public_key: '6c9ebce482028704f377',
+    });
+</script>-->

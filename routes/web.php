@@ -7,6 +7,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\Admin\CommentModerationController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 // Маршруты для сайта
 Route::get('/home', [SiteController::class, 'index'])->name('home');
@@ -33,6 +34,8 @@ Route::prefix('admin')->group(function () {
             // Админка постов 01/10/2025
             Route::resource('posts', AdminPostController::class)
                 ->except(['show']);
+            Route::post('/posts/upload', [AdminPostController::class, 'upload'])
+                ->name('posts.upload');
 
             //            Route::get("/posts/create", [PostController::class, "create"])->name('admin.posts.create');
 //            Route::post("/posts/store", [PostController::class, "store"])->name('admin.posts.store');
@@ -139,3 +142,32 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'/*'can:modera
 //            ->middleware('can:is_admin'); // если у вас есть такой gate
 //    });
 //Route::middleware(['auth', 'admin'])->get('admin/comments', [CommentModerationController::class, 'index'])->name('admin.comments.index');
+Route::get('/test-storage', function() {
+    // Тест записи
+    Storage::put('public/images/test.txt', 'Hello World');
+
+    // Тест чтения
+    $files = Storage::files('public/images');
+
+    return [
+        'files_in_storage' => $files,
+        'storage_path' => storage_path('app/public/images'),
+        'public_storage_link' => public_path('storage'),
+        'symlink_exists' => is_link(public_path('storage')),
+    ];
+});
+Route::get('/test-image-access', function() {
+    // Создаем тестовый файл в public
+    $testContent = "test image";
+    file_put_contents(public_path('images/test.jpg'), $testContent);
+
+    // Проверяем доступность
+    $url = url('images/test.jpg');
+
+    return "
+        <h1>Test Image Access</h1>
+        <p>Test file created at: " . public_path('images/test.jpg') . "</p>
+        <p>URL: <a href='$url'>$url</a></p>
+        <p>File exists: " . (file_exists(public_path('images/test.jpg')) ? 'Yes' : 'No') . "</p>
+    ";
+});

@@ -9,6 +9,8 @@ use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AdminPostController extends Controller
 {
@@ -88,6 +90,9 @@ class AdminPostController extends Controller
     public function update(Request $request, Post $post)
     {
 //        dd($request->all()); // отладка
+//        Log::debug('=== UPDATE METHOD STARTED ===');
+//        Log::debug('Request data:', $request->all());
+//        Log::debug('Post ID:', ['id' => $post->id]);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -102,6 +107,9 @@ class AdminPostController extends Controller
             'updated_at' => 'nullable|date',
         ]);
 
+//        Log::debug('Validated data:', $validated);
+//        Log::debug('Before update');
+
         $post->update([
             'title' => $validated['title'],
             'content' => $validated['content'],
@@ -110,12 +118,75 @@ class AdminPostController extends Controller
             'created_at' => $validated['created_at'],
             'updated_at' => $validated['updated_at'],
         ]);
-
+//        Log::debug('After update');
+//        Log::debug('Post after update', $post->toArray());
+//        // Проверим, обновилась ли запись
+//        $updatedPost = Post::find($post->id);
+//        Log::debug('Updated post:', [
+//            'title' => $updatedPost->title,
+//            'content_length' => strlen($updatedPost->content)
+//        ]);
         // Синхронизируем категории и теги
-//        $post->categories()->sync($request->categories ?? []);
-//        $post->tags()->sync($request->tags ?? []);
         $post->categories()->sync($request->input('categories', []));
         $post->tags()->sync($request->input('tags', []));
+
+        return redirect()->route('admin.posts.index')
+            ->with('success', 'Пост успешно обновлен!');
+    }
+
+    public function update1(Request $request, Post $post)
+    {
+        Log::debug('=== SIMPLIFIED UPDATE ===');
+        Log::debug('Request data:', $request->all());
+
+        // Простейшая валидация
+        $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+
+        // Простое обновление
+        $post->title = $request->title;
+        $post->content = $request->input('content');//$request->content;
+        $post->save();
+        Log::debug('Post after save', $post->toArray());
+
+//        Log::debug('Post saved:', ['id' => $post->id, 'title' => $post->title]);
+
+        return redirect()->route('admin.posts.index')
+            ->with('success', 'Пост успешно обновлен!');
+    }
+
+    public function update2(Request $request, Post $post)
+    {
+        Log::debug('=== SIMPLIFIED UPDATE ===');
+        Log::debug('Request data:', $request->all());
+        Log::debug('Request input content:', ['content' => $request->input('content')]);
+
+        // Простейшая валидация
+        $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+
+        // Логируем состояние поста до обновления
+        Log::debug('Post before update:', $post->toArray());
+
+        // Простое обновление
+        $post->title = $request->title;
+        $post->content = $request->input('content');
+
+        // Логируем состояние поста после присвоения, но до сохранения
+        Log::debug('Post after assignment:', $post->toArray());
+
+        $result = $post->save();
+
+        Log::debug('Save result:', ['result' => $result]);
+        Log::debug('Post after save:', $post->toArray());
+
+        // Проверим, был ли пост изменен
+        Log::debug('Post wasChanged:', ['wasChanged' => $post->wasChanged()]);
+        Log::debug('Post getChanges:', ['changes' => $post->getChanges()]);
 
         return redirect()->route('admin.posts.index')
             ->with('success', 'Пост успешно обновлен!');
@@ -129,5 +200,139 @@ class AdminPostController extends Controller
 
         return redirect()->route('admin.posts.index')
             ->with('success', 'Пост успешно удален!');
+    }
+
+    public function upload0(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+        ]);
+
+        try {
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+//                $filename = Str::random(20) . '.' . $file->getClientOriginalExtension();
+                $filename = Str::random(20) . '_' . time() . '.' . $file->getClientOriginalExtension();
+                // Сохраняем в storage/app/public/images
+                $path = $file->storeAs('public/images', $filename);
+
+//                отладка:
+                // Проверяем, что файл действительно сохранился
+                if (!Storage::exists($path)) {
+                    dump([
+                        'path' => $path,
+                        'size' => Storage::size($path),
+                        'filename' => $filename
+                    ]); // отладка
+                    throw new \Exception('File was not saved');
+                }
+
+                Log::info('File uploaded successfully', [
+                    'path' => $path,
+                    'size' => Storage::size($path),
+                    'filename' => $filename
+                ]);
+
+                // Возвращаем URL для доступа к изображению
+                $url = Storage::url($path);
+
+                return response()->json([
+                    'location' => asset($url)
+                ]);
+            }
+
+            return response()->json(['error' => 'File not found'], 400);
+
+        } catch (\Exception $e) {
+//            return response()->json(['error' => $e->getMessage()], 500);
+            Log::error('Upload failed', [
+                'error' => $e->getMessage(),
+                'file' => $request->file('file') ? $request->file('file')->getClientOriginalName() : 'no file'
+            ]);
+
+            return response()->json(['error' => $e->getMessage()], 500);
+
+        }
+    }
+
+    public function upload1(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
+        ]);
+
+        try {
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $filename = Str::random(20) . '_' . time() . '.' . $file->getClientOriginalExtension();
+
+                // Сохраняем файл
+                $path = $file->storeAs('public/images', $filename);
+
+                // Логируем для отладки
+                Log::info('File upload details:', [
+                    'original_name' => $file->getClientOriginalName(),
+                    'stored_path' => $path,
+                    'storage_path' => storage_path('app/' . $path),
+                    'filesize' => $file->getSize(),
+                ]);
+
+                // Проверяем существование файла
+                if (!Storage::exists($path)) {
+                    throw new \Exception('File was not saved to: ' . $path);
+                }
+
+                // Получаем URL
+                $url = Storage::url($path);
+
+                Log::info('File URL:', ['url' => $url, 'full_url' => asset($url)]);
+
+                return response()->json([
+                    'location' => asset($url)
+                ]);
+            }
+
+            return response()->json(['error' => 'File not found'], 400);
+
+        } catch (\Exception $e) {
+            Log::error('Upload failed:', ['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function upload(Request $request)
+    {
+
+        $request->validate([
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
+        ]);
+
+        try {
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $filename = Str::random(20) . '_' . time() . '.' . $file->getClientOriginalExtension();
+
+                // Сохраняем в public/images вместо storage
+                $path = $file->move(public_path('images'), $filename);
+
+                Log::info('File uploaded to public path:', [
+                    'path' => $path,
+                    'filename' => $filename
+                ]);
+
+                // Возвращаем прямой URL
+                $url = url('images/' . $filename);
+
+                return response()->json([
+                    'location' => $url
+                ]);
+            }
+
+            return response()->json(['error' => 'File not found'], 400);
+
+        } catch (\Exception $e) {
+            Log::error('Upload failed:', ['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

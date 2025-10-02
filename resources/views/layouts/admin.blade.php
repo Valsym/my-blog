@@ -6,7 +6,14 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield("title", "Мой блог")</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-
+    <style>
+        .tox-tinymce {
+            border-radius: 4px;
+        }
+        .ck-editor__editable {
+            min-height: 500px;
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">

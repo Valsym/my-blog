@@ -43,6 +43,13 @@ class Post extends Model
     const STATUS_MODERATION = 'moderation';
     const STATUS_DRAFT = 'draft';
 
+    // Если нужно, добавьте мутатор для очистки HTML
+    public function setContentAttribute($value)
+    {
+        // Очистка от потенциально опасного HTML, если нужно
+//        $this->attributes['content'] = $value;
+    }
+
     public static function findOrFail(int $id)
     {
         //
