@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
-class PostController extends Controller
+class AdminPostController extends Controller
 {
     public function index()
     {
@@ -82,11 +82,13 @@ class PostController extends Controller
         $categories = Category::all();
         $tags = Tag::all();
 
-        return view('admin.posts.edit', compact('post', 'categories', 'tags'));
+        return view('admin.posts.create'/*edit'*/, compact('post', 'categories', 'tags'));
     }
 
     public function update(Request $request, Post $post)
     {
+//        dd($request->all()); // отладка
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
@@ -110,8 +112,10 @@ class PostController extends Controller
         ]);
 
         // Синхронизируем категории и теги
-        $post->categories()->sync($request->categories ?? []);
-        $post->tags()->sync($request->tags ?? []);
+//        $post->categories()->sync($request->categories ?? []);
+//        $post->tags()->sync($request->tags ?? []);
+        $post->categories()->sync($request->input('categories', []));
+        $post->tags()->sync($request->input('tags', []));
 
         return redirect()->route('admin.posts.index')
             ->with('success', 'Пост успешно обновлен!');

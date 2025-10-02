@@ -32,7 +32,7 @@ class AdminAuthController extends Controller
                 session(['is_admin' => true]);
                 //dd('ok!');
 
-                return redirect()->route('admin.posts.create')
+                return redirect()->route('admin.posts.index')//create')
                     ->with('success', 'Вы успешно вошли в админку!');
             } else if ($user->is_moderator) {
                 // Сохраняем информацию о том, что пользователь is_moderator

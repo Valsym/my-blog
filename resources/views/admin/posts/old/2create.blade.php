@@ -1,11 +1,7 @@
-@extends('layouts.app')
+{{-- resources/views/admin/posts/create.blade.php --}}
+@extends('layouts.admin')
 
 @section('content')
-    <form action="{{ isset($post) ? route('admin.posts.update', $post) : route('admin.posts.store') }}" method="POST">
-        @csrf
-        @if(isset($post))
-            @method('PUT')
-        @endif
     <div class="container">
         <div class="row">
             <div class="col-md-8">
@@ -14,62 +10,41 @@
                         <h2>{{ isset($post) ? 'Редактирование поста' : 'Создание поста' }}</h2>
                     </div>
                     <div class="card-body">
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-
+                        <form action="{{ isset($post) ? route('admin.posts.update', $post) : route('admin.posts.store') }}" method="POST">
+                            @csrf
+                            @if(isset($post))
+                                @method('PUT')
+                            @endif
 
                             <div class="mb-3">
                                 <label for="title" class="form-label">Заголовок *</label>
-                                <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title"
+                                <input type="text" class="form-control" id="title" name="title"
                                        value="{{ old('title', $post->title ?? '') }}" required>
-                                @error('title')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
                             </div>
 
                             <div class="mb-3">
                                 <label for="content" class="form-label">Контент *</label>
-                                <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content" rows="15" required>{{ old('content', $post->content ?? '') }}</textarea>
-                                @error('content')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <textarea class="form-control" id="content" name="content" rows="15" required>{{ old('content', $post->content ?? '') }}</textarea>
                             </div>
 
                             <div class="mb-3">
                                 <label for="excerpt" class="form-label">Краткое описание</label>
-                                <textarea class="form-control @error('excerpt') is-invalid @enderror" id="excerpt" name="excerpt" rows="3">{{ old('excerpt', $post->excerpt ?? '') }}</textarea>
-                                @error('excerpt')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <textarea class="form-control" id="excerpt" name="excerpt" rows="3">{{ old('excerpt', $post->excerpt ?? '') }}</textarea>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="created_at" class="form-label">Дата создания</label>
-                                        <input type="datetime-local" class="form-control @error('created_at') is-invalid @enderror" id="created_at" name="created_at"
+                                        <input type="datetime-local" class="form-control" id="created_at" name="created_at"
                                                value="{{ old('created_at', isset($post) ? $post->created_at->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}">
-                                        @error('created_at')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="updated_at" class="form-label">Дата обновления</label>
-                                        <input type="datetime-local" class="form-control @error('updated_at') is-invalid @enderror" id="updated_at" name="updated_at"
+                                        <input type="datetime-local" class="form-control" id="updated_at" name="updated_at"
                                                value="{{ old('updated_at', isset($post) ? $post->updated_at->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}">
-                                        @error('updated_at')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -77,10 +52,7 @@
                             <button type="submit" class="btn btn-primary">
                                 {{ isset($post) ? 'Обновить пост' : 'Создать пост' }}
                             </button>
-                            @if(isset($post))
-                                <a href="{{ route('admin.posts.index') }}" class="btn btn-secondary">Отмена</a>
-                            @endif
-
+                        </form>
                     </div>
                 </div>
             </div>
@@ -93,7 +65,7 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <label for="published" class="form-label">Статус</label>
-                            <select class="form-select @error('published') is-invalid @enderror" id="published" name="published">
+                            <select class="form-select" id="published" name="published">
                                 <option value="published" {{ old('published', $post->published ?? '') == 'published' ? 'selected' : '' }}>
                                     Опубликован
                                 </option>
@@ -104,16 +76,10 @@
                                     Черновик
                                 </option>
                             </select>
-                            @error('published')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Категории</label>
-                            @error('categories')
-                            <div class="text-danger">{{ $message }}</div>
-                            @enderror
                             @foreach($categories as $category)
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="categories[]"
@@ -128,9 +94,6 @@
 
                         <div class="mb-3">
                             <label class="form-label">Теги</label>
-                            @error('tags')
-                            <div class="text-danger">{{ $message }}</div>
-                            @enderror
                             @foreach($tags as $tag)
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="tags[]"
@@ -142,25 +105,9 @@
                                 </div>
                             @endforeach
                         </div>
-
-                        {{-- Дополнительная информация для режима редактирования --}}
-                        @if(isset($post))
-                            <div class="mb-3">
-                                <div class="card bg-light">
-                                    <div class="card-body">
-                                        <h6>Информация о посте</h6>
-                                        <p><strong>ID:</strong> {{ $post->id }}</p>
-                                        <p><strong>Автор:</strong> {{ $post->user->name }}</p>
-                                        <p><strong>Просмотры:</strong> {{ $post->views }}</p>
-                                        <p><strong>Slug:</strong> {{ $post->slug }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    </form>
 @endsection

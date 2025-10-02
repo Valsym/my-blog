@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Comment;
 use App\Policies\CommentPolicy;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,7 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Используем Bootstrap для пагинации
+        Paginator::useBootstrap();
+
+        // ИЛИ для Bootstrap 5:
+        // Paginator::useBootstrapFive();
     }
 
 

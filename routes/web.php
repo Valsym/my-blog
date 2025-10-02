@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminPostController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
@@ -28,9 +29,10 @@ Route::prefix('admin')->group(function () {
 //        Route::post('/news', [NewsController::class, 'store'])->name('admin.news.store');
         Route::get('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
-        Route::middleware('admin')->group(function () { // работает!!! 26/09
+        Route::middleware('admin')->name('admin.')->group(function () { // работает!!! 26/09
             // Админка постов 01/10/2025
-            Route::resource('posts', \App\Http\Controllers\Admin\PostController::class);
+            Route::resource('posts', AdminPostController::class)
+                ->except(['show']);
 
             //            Route::get("/posts/create", [PostController::class, "create"])->name('admin.posts.create');
 //            Route::post("/posts/store", [PostController::class, "store"])->name('admin.posts.store');
@@ -41,6 +43,9 @@ Route::prefix('admin')->group(function () {
         });
     });
 });
+//Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
+//    Route::resource('posts', AdminPostController::class)->except(['show']);
+//});
 //Route::get("/", function () {
 //    $posts = [
 //        ["id" => 1, "title" => "Первая статья", "content" =>
@@ -86,10 +91,10 @@ Route::prefix("admin")->group(function () {
 //    return view("contact");
 //})->name('contact');
 
-Route::get("/posts", [PostController::class, "index"])->name('posts');;
+Route::get("/posts", [PostController::class, "index"])->name('posts');
 //Route::get("/posts/create", [PostController::class, "create"]);
 //Route::post("/posts", [PostController::class, "store"]);
-Route::get("/posts/{id}", [PostController::class, "show"])->name('posts.show');
+Route::get("/posts/{id}", [PostController::class, "show"])->name('public.posts.show');
 //Route::get("/posts/{id}/edit", [PostController::class, "edit"]);
 //Route::put("/posts/{id}", [PostController::class, "update"]);
 //Route::delete("/posts/{id}", [PostController::class, "destroy"]);
