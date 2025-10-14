@@ -50,10 +50,10 @@
                 <a class="nav-link" href="{{ route('contact') }}">Контакты</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('posts') }}">Статьи</a>
+                <a class="nav-link" href="{{ route('public.posts.index') }}">Статьи</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.comments.index') }}">Модерация коментов</a>
+                <a class="nav-link" href="{{ route('admin.comments.index') }}">Модерация комментов</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('admin.logout') }}">Logout</a>

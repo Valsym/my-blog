@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,13 +16,57 @@ class PostController extends SiteController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index0()
     {
         $posts = Post::with("user")->latest()->paginate(10);
-//        User::find($post->user_id);
 
-        return view("home", compact("posts"));
-//        return view("posts.index", compact("posts"));
+//        return view("home", compact("posts"));
+        return view("index", compact("posts"));
+    }
+
+    public function index()//Request $request)
+    {
+        $query = Post::with('user', 'tags')
+//            ->where('is_published', true);
+            ->where('published', Post::STATUS_PUBLISHED);
+
+        // Поиск по словам
+        // Используем request() хелпер вместо инъекции
+        if (request()->has('search') && request('search') != '') {
+            $search = request('search');
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%");
+            });
+        }
+//        if ($request->has('search') && $request->search != '') {
+//            $search = $request->search;
+//            $query->where(function($q) use ($search) {
+//                $q->where('title', 'like', "%{$search}%")
+//                    ->orWhere('content', 'like', "%{$search}%");
+//            });
+//        }
+
+        $posts = $query->latest()->paginate(10);
+
+        // Данные для сайдбара - исправляем счетчики для категорий
+        $categories = Category::withCount(['posts' => function($query) {
+            $query->where('published', Post::STATUS_PUBLISHED);
+        }])->get();
+
+        $tags = Tag::withCount(['posts' => function($query) {
+            $query->where('published', Post::STATUS_PUBLISHED);
+        }])->get();
+
+        // Данные для сайдбара
+//        $categories = Category::withCount('posts')->get();
+//        $tags = Tag::withCount('posts')->get();
+        $popularPosts = Post::where('published', Post::STATUS_PUBLISHED)//where('is_published', true)
+            ->orderBy('views', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('index', compact('posts', 'categories', 'tags', 'popularPosts'));
     }
 
     /**
@@ -117,7 +162,14 @@ class PostController extends SiteController
      */
     public function show(int $id)//Post $post)
     {
-        $post = Post::where('id', $id)->first();
+//        $post = Post::where('id', $id)->first();
+        $post = Post::where('id', $id)
+            ->where('published', Post::STATUS_PUBLISHED)
+            ->firstOrFail();
+
+        // Увеличиваем счетчик просмотров
+        $post->increment('views');
+
         $post = $post
             ->load('user', 'tags', 'comments.user', 'comments.replies.user');
 
