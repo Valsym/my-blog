@@ -9,6 +9,24 @@ use App\Http\Controllers\Admin\CommentModerationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
+
+//Route::get("/", function () {
+//    $posts = [
+//        ["id" => 1, "title" => "Первая статья", "content" =>
+//            "Содержание первой статьи..."],
+//        ["id" => 2, "title" => "Вторая статья", "content" =>
+//            "Содержание второй статьи..."],
+//    ];
+////    dd($posts);
+//    return view("home", ["posts" => $posts]);
+//})->name('home');
+//
+////Отображение всех статей
+//Route::get("/all", function () {
+//    return "Список всех статей блога";
+//});
+
+
 // Маршруты для сайта
 Route::get('/home', [SiteController::class, 'index'])->name('home');
 Route::get('/about', [SiteController::class, 'about'])->name('about');
@@ -49,21 +67,7 @@ Route::prefix('admin')->group(function () {
 //Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
 //    Route::resource('posts', AdminPostController::class)->except(['show']);
 //});
-//Route::get("/", function () {
-//    $posts = [
-//        ["id" => 1, "title" => "Первая статья", "content" =>
-//            "Содержание первой статьи..."],
-//        ["id" => 2, "title" => "Вторая статья", "content" =>
-//            "Содержание второй статьи..."],
-//    ];
-////    dd($posts);
-//    return view("home", ["posts" => $posts]);
-//})->name('home');
 
-// Отображение всех статей
-//Route::get("/posts", function () {
-//    return "Список всех статей блога";
-//});
 // Отображение одной статьи
 Route::get("/posts/{id}", function ($id) {
     return "Статья номер: " . $id;

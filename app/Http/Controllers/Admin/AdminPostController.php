@@ -14,13 +14,100 @@ use Illuminate\Support\Facades\Log;
 
 class AdminPostController extends Controller
 {
-    public function index()
+    public function index0()
     {
         $posts = Post::with(['categories', 'tags', 'user'])
             ->latest()
             ->paginate(10);
 
         return view('admin.posts.index', compact('posts'));
+    }
+
+    /**
+     * Фильтрация и сортировка постов в админке
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function index(Request $request)
+    {
+        $query = Post::with(['categories', 'tags', 'user']);
+
+        // Применяем фильтры через scope-методы
+        if ($request->filled('search')) {
+            $query->search($request->search);
+        }
+
+        if ($request->filled('status')) {
+            $query->byStatus($request->status);
+        }
+
+        if ($request->filled('categories')) {
+            $query->byCategories($request->categories);
+        }
+
+        if ($request->filled('tags')) {
+            $query->byTags($request->tags);
+        }
+
+        if ($request->filled('date_from')) {
+            $query->dateFrom($request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->dateTo($request->date_to);
+        }
+
+        // Поиск по заголовку и содержанию
+        /*if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%")
+                    ->orWhere('excerpt', 'like', "%{$search}%");
+            });
+        }
+
+        // Фильтр по статусу
+        if ($request->has('status') && $request->status) {
+            $query->where('published', $request->status);
+        }
+
+        // Фильтр по категориям
+        if ($request->has('categories') && $request->categories) {
+            $query->whereHas('categories', function($q) use ($request) {
+                $q->whereIn('categories.id', $request->categories);
+            });
+        }
+
+        // Фильтр по тегам
+        if ($request->has('tags') && $request->tags) {
+            $query->whereHas('tags', function($q) use ($request) {
+                $q->whereIn('tags.id', $request->tags);
+            });
+        }
+
+        // Фильтр по дате создания (от)
+        if ($request->has('date_from') && $request->date_from) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        // Фильтр по дате создания (до)
+        if ($request->has('date_to') && $request->date_to) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }*/
+
+        // Сортировка
+        $sort = $request->get('sort', 'created_at');
+        $order = $request->get('order', 'desc');
+        $query->orderBy($sort, $order);
+
+        $posts = $query->paginate(10)->appends($request->except('page'));
+
+        $categories = Category::all();
+        $tags = Tag::all();
+
+        return view('admin.posts.index', compact('posts', 'categories', 'tags'));
     }
 
     public function create()
@@ -90,9 +177,9 @@ class AdminPostController extends Controller
     public function update(Request $request, Post $post)
     {
 //        dd($request->all()); // отладка
-        Log::debug('=== UPDATE METHOD STARTED ===');
-        Log::debug('Request data:', $request->all());
-        Log::debug('Post ID:', ['id' => $post->id]);
+//        Log::debug('=== UPDATE METHOD STARTED ===');
+//        Log::debug('Request data:', $request->all());
+//        Log::debug('Post ID:', ['id' => $post->id]);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -107,8 +194,8 @@ class AdminPostController extends Controller
             'updated_at' => 'nullable|date',
         ]);
 
-        Log::debug('Validated data:', $validated);
-        Log::debug('Before update');
+//        Log::debug('Validated data:', $validated);
+//        Log::debug('Before update');
 
         $post->update([
             'title' => $validated['title'],
@@ -118,14 +205,14 @@ class AdminPostController extends Controller
             'created_at' => $validated['created_at'],
             'updated_at' => $validated['updated_at'],
         ]);
-        Log::debug('After update');
-        Log::debug('Post after update', $post->toArray());
-        // Проверим, обновилась ли запись
-        $updatedPost = Post::find($post->id);
-        Log::debug('Updated post:', [
-            'title' => $updatedPost->title,
-            'content_length' => strlen($updatedPost->content)
-        ]);
+//        Log::debug('After update');
+//        Log::debug('Post after update', $post->toArray());
+//        // Проверим, обновилась ли запись
+//        $updatedPost = Post::find($post->id);
+//        Log::debug('Updated post:', [
+//            'title' => $updatedPost->title,
+//            'content_length' => strlen($updatedPost->content)
+//        ]);
         // Синхронизируем категории и теги
         $post->categories()->sync($request->input('categories', []));
         $post->tags()->sync($request->input('tags', []));

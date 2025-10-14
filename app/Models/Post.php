@@ -103,4 +103,43 @@ class Post extends Model
         return $query->where('published', self::STATUS_PUBLISHED);
     }
 
+    // Для фильтров в админке
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function($q) use ($search) {
+            $q->where('title', 'like', "%{$search}%")
+                ->orWhere('content', 'like', "%{$search}%")
+                ->orWhere('excerpt', 'like', "%{$search}%");
+        });
+    }
+
+    public function scopeByStatus($query, $status)
+    {
+        return $query->where('published', $status);
+    }
+
+    public function scopeByCategories($query, $categoryIds)
+    {
+        return $query->whereHas('categories', function($q) use ($categoryIds) {
+            $q->whereIn('categories.id', $categoryIds);
+        });
+    }
+
+    public function scopeByTags($query, $tagIds)
+    {
+        return $query->whereHas('tags', function($q) use ($tagIds) {
+            $q->whereIn('tags.id', $tagIds);
+        });
+    }
+
+    public function scopeDateFrom($query, $date)
+    {
+        return $query->whereDate('created_at', '>=', $date);
+    }
+
+    public function scopeDateTo($query, $date)
+    {
+        return $query->whereDate('created_at', '<=', $date);
+    }
+
 }

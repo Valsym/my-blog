@@ -13,6 +13,23 @@
         .ck-editor__editable {
             min-height: 500px;
         }
+        /* Стили для фильтров */
+        .table th a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .table th a:hover {
+            color: #0d6efd;
+        }
+
+        .badge {
+            margin: 1px;
+        }
+
+        .form-check {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>

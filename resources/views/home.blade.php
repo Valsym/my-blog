@@ -25,6 +25,8 @@
                 </div>
             @endforeach
 
+            {{ $posts->links() }}
+
             @if($posts->isEmpty())
                 <p class="text-center">Нет статей для отображения.</p>
             @endif

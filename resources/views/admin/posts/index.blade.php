@@ -17,6 +17,121 @@
                     </div>
                 @endif
 
+                <!-- Форма фильтрации -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Фильтры и поиск</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" action="{{ route('admin.posts.index') }}">
+                            <div class="row">
+                                <!-- Поиск -->
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="search" class="form-label">Поиск</label>
+                                        <input type="text" class="form-control" id="search" name="search"
+                                               value="{{ request('search') }}" placeholder="По заголовку, содержанию...">
+                                    </div>
+                                </div>
+
+                                <!-- Статус -->
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="status" class="form-label">Статус</label>
+                                        <select class="form-select" id="status" name="status">
+                                            <option value="">Все статусы</option>
+                                            <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Опубликован</option>
+                                            <option value="moderation" {{ request('status') == 'moderation' ? 'selected' : '' }}>На модерации</option>
+                                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Черновик</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Сортировка -->
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="sort" class="form-label">Сортировка</label>
+                                        <select class="form-select" id="sort" name="sort">
+                                            <option value="created_at" {{ request('sort') == 'created_at' ? 'selected' : '' }}>По дате создания</option>
+                                            <option value="title" {{ request('sort') == 'title' ? 'selected' : '' }}>По заголовку</option>
+                                            <option value="views" {{ request('sort') == 'views' ? 'selected' : '' }}>По просмотрам</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Категории -->
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Категории</label>
+                                        <div style="max-height: 150px; overflow-y: auto; border: 1px solid #dee2e6; padding: 10px; border-radius: 4px;">
+                                            @foreach($categories as $category)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="categories[]"
+                                                           value="{{ $category->id }}" id="filter_category_{{ $category->id }}"
+                                                        {{ in_array($category->id, request('categories', [])) ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="filter_category_{{ $category->id }}">
+                                                        {{ $category->name }}
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Теги -->
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Теги</label>
+                                        <div style="max-height: 150px; overflow-y: auto; border: 1px solid #dee2e6; padding: 10px; border-radius: 4px;">
+                                            @foreach($tags as $tag)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="tags[]"
+                                                           value="{{ $tag->id }}" id="filter_tag_{{ $tag->id }}"
+                                                        {{ in_array($tag->id, request('tags', [])) ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="filter_tag_{{ $tag->id }}">
+                                                        {{ $tag->name }}
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Даты -->
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="date_from" class="form-label">Дата от</label>
+                                        <input type="date" class="form-control" id="date_from" name="date_from"
+                                               value="{{ request('date_from') }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="date_to" class="form-label">Дата до</label>
+                                        <input type="date" class="form-control" id="date_to" name="date_to"
+                                               value="{{ request('date_to') }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary">Применить фильтры</button>
+                                    <a href="{{ route('admin.posts.index') }}" class="btn btn-secondary">Сбросить</a>
+
+                                    <!-- Счетчик найденных постов -->
+                                    @if(request()->anyFilled(['search', 'status', 'categories', 'tags', 'date_from', 'date_to']))
+                                        <span class="ms-3 text-muted">
+                                        Найдено постов: {{ $posts->total() }}
+                                    </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Таблица постов -->
                 <div class="card">
                     <div class="card-body">
                         <table class="table">
