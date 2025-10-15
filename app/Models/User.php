@@ -24,7 +24,8 @@ class User extends Authenticatable
 //        'password',
 //    ];
     protected $fillable = [ // 26/09/2025
-        'name', 'email', 'password', 'is_trusted', 'is_moderator', 'is_admin'
+        'name', 'email', 'password', 'is_trusted', 'is_moderator',
+        'is_admin', 'is_blocked',
     ];
 
     /**
@@ -42,6 +43,7 @@ class User extends Authenticatable
         'is_trusted' => 'boolean',
         'is_moderator' => 'boolean',
         'is_admin' => 'boolean',
+        'is_blocked' => 'boolean',
     ];
 
     /**
@@ -92,5 +94,27 @@ class User extends Authenticatable
     public function moderatedComments()
     {
         return $this->hasMany(Comment::class, 'moderated_by');
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+        public function isBlocked()
+    {
+        return $this->is_blocked;
+    }
+
+    // Scope для админов
+    public function scopeAdmins($query)
+    {
+        return $query->where('is_admin', true);
+    }
+
+    // Scope для активных пользователей
+    public function scopeActive($query)
+    {
+        return $query->where('is_blocked', false);
     }
 }

@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminPostController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
@@ -87,18 +90,6 @@ Route::prefix("admin")->group(function () {
     });
 });
 
-// Страница "О нас"
-//Route::get("/about", function () {
-////    return "Обо мне";
-//    return view("about");
-//})->name('about');
-//
-//// Страница контактов (/contact)
-//Route::get("/contact", function () {
-////    return "Обо мне";
-//    return view("contact");
-//})->name('contact');
-
 Route::get("/posts", [PostController::class, "index"])->name('public.posts.index');
 //Route::get("/posts/create", [PostController::class, "create"]);
 //Route::post("/posts", [PostController::class, "store"]);
@@ -141,45 +132,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'/*'can:modera
 //    });
 });
 
-// Временное решение - закомментируйте сложную проверку
-//Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-// Или проверяйте просто на is_admin
-//    Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-//        Route::get('/comments', [CommentModerationController::class, 'index'])
-//            ->name('comments.index')
-//            ->middleware('can:is_admin'); // если у вас есть такой gate
-//    });
-//Route::middleware(['auth', 'admin'])->get('admin/comments', [CommentModerationController::class, 'index'])->name('admin.comments.index');
-//Route::get('/test-storage', function() {
-//    // Тест записи
-//    Storage::put('public/images/test.txt', 'Hello World');
-//
-//    // Тест чтения
-//    $files = Storage::files('public/images');
-//
-//    return [
-//        'files_in_storage' => $files,
-//        'storage_path' => storage_path('app/public/images'),
-//        'public_storage_link' => public_path('storage'),
-//        'symlink_exists' => is_link(public_path('storage')),
-//    ];
-//});
-//Route::get('/test-image-access', function() {
-//    // Создаем тестовый файл в public
-//    $testContent = "test image";
-//    file_put_contents(public_path('images/test.jpg'), $testContent);
-//
-//    // Проверяем доступность
-//    $url = url('images/test.jpg');
-//
-//    return "
-//        <h1>Test Image Access</h1>
-//        <p>Test file created at: " . public_path('images/test.jpg') . "</p>
-//        <p>URL: <a href='$url'>$url</a></p>
-//        <p>File exists: " . (file_exists(public_path('images/test.jpg')) ? 'Yes' : 'No') . "</p>
-//    ";
-//});
-
 // Маршруты для категорий
 //Route::get('/categories/{id}', [App\Http\Controllers\CategoryController::class, 'show'])
 //    ->name('public.categories.show');
@@ -192,3 +144,26 @@ Route::get('/categories/{category:slug}', [CategoryController::class, 'show'])
 Route::get('/tags/{tag:slug}', [App\Http\Controllers\TagController::class, 'show'])
     ->name('public.tags.show');
 
+// Админ-маршруты
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index']); // Перенаправление на дашборд
+
+    // Посты
+    Route::resource('posts', AdminPostController::class);
+
+    // Комментарии
+//    Route::get('/comments', [AdminCommentController::class, 'index'])->name('comments.index');
+//    Route::delete('/comments/{comment}', [AdminCommentController::class, 'destroy'])->name('comments.destroy');
+
+    // Пользователи
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+    Route::post('/users/{user}/toggle-block', [AdminUserController::class, 'toggleBlock'])->name('users.toggle-block');
+
+    // Профиль
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});

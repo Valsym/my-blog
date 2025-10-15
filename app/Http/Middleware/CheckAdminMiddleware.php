@@ -21,17 +21,19 @@ class CheckAdminMiddleware
      */
     public function handle(Request $request, Closure $next)//, string $role): Response
     {
-        if (session('is_admin') || session('is_moderator')) {
-            return $next($request);
-
+        if (!auth()->check() || !auth()->user()->is_admin) {
+            abort(403, 'Доступ запрещен');
         }
-//          OR (не работает)
-//        if (!$request->user() || !$request->user()->isAdmin()) {
-//            return response()->json(['message' => 'Forbidden'], 403);
-//        }
-        return redirect()->route('admin.login')
-            ->with('error', 'Требуется авторизация как модератор или админ');
 
+        return $next($request);
+
+//        if (session('is_admin') || session('is_moderator')) {
+//            return $next($request);
+//
+//        }
+//
+//        return redirect()->route('admin.login')
+//            ->with('error', 'Требуется авторизация как модератор или админ');
 
     }
 }

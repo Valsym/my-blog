@@ -121,7 +121,7 @@
                                                 </td>
                                                 <td>{{ $comment->user->name }}</td>
                                                 <td>
-                                                    <a href="{{ route('posts.show', $comment->post) }}" target="_blank">
+                                                    <a href="{{ route('public.posts.show', $comment->post) }}" target="_blank">
                                                         {{ Str::limit($comment->post->title, 30) }}
                                                     </a>
                                                 </td>

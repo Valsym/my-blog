@@ -34,7 +34,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="{{ route('home') }}">Админка Сайта</a>
+    <a class="navbar-brand" href="{{ route('admin.dashboard') }}">Админка сайта</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -53,7 +53,7 @@
                 <a class="nav-link" href="{{ route('public.posts.index') }}">Статьи</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.comments.index') }}">Модерация комментов</a>
+                <a class="nav-link" href="{{ route('admin.dashboard') }}">Админ-панель</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('admin.logout') }}">Logout</a>
