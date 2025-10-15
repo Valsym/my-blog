@@ -57,10 +57,26 @@
                             @endforeach
                         </div>
 
-                        <a class="btn btn-outline-primary mt-3"
-                           href="{{ route('public.posts.show',['id' => $post->id]) }}">
-                            Читать далее...
-                        </a>
+                        <!-- Кнопки действий -->
+                        <div class="mt-3">
+                            <div class="d-flex flex-column flex-sm-row gap-2 align-items-start align-items-sm-center">
+                                <a class="btn btn-outline-primary"
+                                   href="{{ route('public.posts.show', $post->id) }}">
+                                    📖 Читать далее
+                                </a>
+
+                                @auth
+                                    @if(auth()->user()->is_admin || auth()->id() === $post->user_id)
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ route('admin.posts.edit', $post) }}"
+                                               class="btn btn-sm btn-outline-secondary">
+                                                ✏️ Редактировать
+                                            </a>
+                                        </div>
+                                    @endif
+                                @endauth
+                            </div>
+                        </div>
                     </div>
                 </div>
             @endforeach

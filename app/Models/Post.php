@@ -10,15 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Post extends Model
 {
-//    protected $fillable = [
-//        'title',
-//        'content',
-//        'slug',
-//        'user_id',
-//        'excerpt',
-//        'views',
-//        'published'
-//    ];
     use HasFactory;
 
     protected $fillable = [
@@ -142,6 +133,11 @@ class Post extends Model
     public function scopeDateTo($query, $date)
     {
         return $query->whereDate('created_at', '<=', $date);
+    }
+
+    public function isAdmin()
+    {
+        return $this->is_admin;
     }
 
 }

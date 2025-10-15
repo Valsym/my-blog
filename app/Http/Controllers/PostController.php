@@ -149,7 +149,7 @@ class PostController extends SiteController
 //        return redirect()->route("posts.show", $post)
 //            ->with("success", "Статья успешно создана!");
         return redirect()->route('admin.posts.create')
-            ->with('success', 'Новость успешно добавлена!');
+            ->with('success', 'Статья успешно создана!');
 
 
 //        return redirect()->route("posts.index")
@@ -160,11 +160,11 @@ class PostController extends SiteController
     /**
      * Display the specified resource.
      */
-    public function show(int $id)//Post $post)
+    public function show(Post $post)//int $id)//Post $post)
     {
 //        $post = Post::where('id', $id)->first();
-        $post = Post::where('id', $id)
-            ->where('published', Post::STATUS_PUBLISHED)
+        $post = Post:://where('id', $id)
+            where('published', Post::STATUS_PUBLISHED)
             ->firstOrFail();
 
         // Увеличиваем счетчик просмотров
@@ -174,20 +174,6 @@ class PostController extends SiteController
             ->load('user', 'tags', 'comments.user', 'comments.replies.user');
 
         return view('posts.show', compact('post'));
-
-        $query = Post::with(
-            ['user', 'tags', 'comments.user', 'comments.replies.user']
-        );
-
-        $post = $query->findOrFail($id);
-
-//        $post->load(['user', 'comments.user', 'comments.replies.user']);
-        return view('posts.show', compact('post'));
-
-        $post = Post::findOrFail($id);//->load("comments.user");
-//        $posts = Post::with(["user", "tags", "comments"])->get();
-        return view("posts.show", compact("post"));
-//        return view("posts.show", compact("post"));
     }
 
     /**
