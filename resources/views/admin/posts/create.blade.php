@@ -37,7 +37,7 @@
 
                             <div class="mb-3">
                                 <label for="content" class="form-label">Контент *</label>
-                                <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content" rows="15">{{ old('content', $post->content ?? '') }}</textarea>
+                                <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content" rows="15">{!! old('content', $post->content ?? '') !!}</textarea>
                                 @error('content')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -45,7 +45,7 @@
 
                             <div class="mb-3">
                                 <label for="excerpt" class="form-label">Краткое описание</label>
-                                <textarea class="form-control @error('excerpt') is-invalid @enderror" id="excerpt" name="excerpt" rows="3">{{ old('excerpt', $post->excerpt ?? '') }}</textarea>
+                                <textarea class="form-control @error('excerpt') is-invalid @enderror" id="excerpt" name="excerpt" rows="3">{!! old('excerpt', $post->excerpt ?? '') !!}</textarea>
                                 @error('excerpt')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -179,6 +179,24 @@
                 automatic_uploads: true,
                 file_picker_types: 'image',
                 images_reuse_filename: true,
+                // ДОБАВЬТЕ ЭТИ НАСТРОЙКИ:
+                entity_encoding: 'raw', // Не кодировать HTML-сущности
+                encoding: 'html', // Использовать HTML-кодировку
+                allow_unsafe_link_target: true, // Разрешить небезопасные цели ссылок
+
+                // Настройки для корректной обработки HTML
+                valid_elements: '*[*]', // Разрешить все элементы и атрибуты
+                extended_valid_elements: 'script[language|type|src]',
+                invalid_elements: '', // Не запрещать никакие элементы
+
+                setup: function (editor) {
+                    editor.on('init', function() {
+                        // При инициализации декодируем HTML-сущности
+                        var content = editor.getContent();
+                        content = content.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                        editor.setContent(content);
+                    });
+                },
                 images_upload_handler: function (blobInfo, progress) {
                     return new Promise((resolve, reject) => {
                         const formData = new FormData();

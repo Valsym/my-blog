@@ -44,11 +44,13 @@ class Post extends Model
     const STATUS_DRAFT = 'draft';
 
     // Если нужно, добавьте мутатор для очистки HTML
-    public function setContentAttribute($value)
-    {
-        // Очистка от потенциально опасного HTML, если нужно
-        $this->attributes['content'] = $value;
-    }
+//    public function setContentAttribute($value)
+//    {
+//        // Разрешаем только безопасные HTML-теги
+//        return strip_tags($this->content, '<p><br><b><strong><i><em><u><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><code><pre><img><a><div><span>');
+//        // Очистка от потенциально опасного HTML, если нужно
+////        $this->attributes['content'] = $value;
+//    }
 
     public static function findOrFail(int $id)
     {
