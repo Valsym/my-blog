@@ -14,25 +14,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 
-//Route::get("/", function () {
-//    $posts = [
-//        ["id" => 1, "title" => "Первая статья", "content" =>
-//            "Содержание первой статьи..."],
-//        ["id" => 2, "title" => "Вторая статья", "content" =>
-//            "Содержание второй статьи..."],
-//    ];
-////    dd($posts);
-//    return view("home", ["posts" => $posts]);
-//})->name('home');
-//
-////Отображение всех статей
-//Route::get("/all", function () {
-//    return "Список всех статей блога";
-//});
-
-
 // Маршруты для сайта
 Route::get('/home', [SiteController::class, 'index'])->name('home');
+Route::get('/', [SiteController::class, 'index']);// Перенаправление на home
 Route::get('/about', [SiteController::class, 'about'])->name('about');
 Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
 Route::post('/contact', [SiteController::class, 'submitContactForm'])->name('contact.submit');
