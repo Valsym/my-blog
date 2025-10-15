@@ -14,15 +14,6 @@ use Illuminate\Support\Facades\Log;
 
 class AdminPostController extends Controller
 {
-    public function index0()
-    {
-        $posts = Post::with(['categories', 'tags', 'user'])
-            ->latest()
-            ->paginate(10);
-
-        return view('admin.posts.index', compact('posts'));
-    }
-
     /**
      * Фильтрация и сортировка постов в админке
      *
@@ -120,6 +111,10 @@ class AdminPostController extends Controller
 
     public function store(Request $request)
     {
+        // Декодируем HTML-сущности перед валидацией
+        $decodedContent = html_entity_decode($request->input('content'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $request->merge(['content' => $decodedContent]);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
