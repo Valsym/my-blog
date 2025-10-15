@@ -61,7 +61,7 @@
                         <div class="mt-3">
                             <div class="d-flex flex-column flex-sm-row gap-2 align-items-start align-items-sm-center">
                                 <a class="btn btn-outline-primary"
-                                   href="{{ route('public.posts.show', $post->id) }}">
+                                   href="{{ route('public.posts.show', $post->slug) }}">
                                     📖 Читать далее
                                 </a>
 
