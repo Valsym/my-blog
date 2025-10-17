@@ -10,8 +10,10 @@
 
 - **Live Demo**: [https://valsy.ru/Laravel/my-blog-12/](https://valsy.ru/Laravel/my-blog-12/)
 - **Admin Demo**: [https://valsy.ru/Laravel/my-blog-12/admin](https://valsy.ru/Laravel/my-blog-12/admin)
-  (log: admin@example.com\
-pass: password)
+          (admin@example.com/password)
+- **My website**: [https://valsy.ru/](https://valsy.ru/)
+
+
 ## ✨ Особенности
 
 ### Для пользователей
