@@ -12,6 +12,7 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = auth()->user();
+
         return view('admin.profile.edit', compact('user'));
     }
 
@@ -38,7 +39,7 @@ class ProfileController extends Controller
         // Обновляем пароль если предоставлен
         if ($request->filled('password')) {
             $user->update([
-                'password' => Hash::make($validated['password'])
+                'password' => Hash::make($validated['password']),
             ]);
         }
 

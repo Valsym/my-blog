@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-//use \App\Models\User;
-
 class Post extends Model
 {
     use HasFactory;
@@ -21,7 +19,7 @@ class Post extends Model
         'views',
         'published',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     protected $casts = [
@@ -31,22 +29,10 @@ class Post extends Model
 
     // Константы для статусов
     const STATUS_PUBLISHED = 'published';
+
     const STATUS_MODERATION = 'moderation';
+
     const STATUS_DRAFT = 'draft';
-
-    // Если нужно, добавьте мутатор для очистки HTML
-//    public function setContentAttribute($value)
-//    {
-//        // Разрешаем только безопасные HTML-теги
-//        return strip_tags($this->content, '<p><br><b><strong><i><em><u><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><code><pre><img><a><div><span>');
-//        // Очистка от потенциально опасного HTML, если нужно
-////        $this->attributes['content'] = $value;
-//    }
-
-    public static function findOrFail(int $id)
-    {
-        //
-    }
 
     /**
      * Post принадлежит одному User'у
@@ -57,7 +43,6 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
-
 
     /**
      * Многие-ко-многим
@@ -99,7 +84,7 @@ class Post extends Model
     // Для фильтров в админке
     public function scopeSearch($query, $search)
     {
-        return $query->where(function($q) use ($search) {
+        return $query->where(function ($q) use ($search) {
             $q->where('title', 'like', "%{$search}%")
                 ->orWhere('content', 'like', "%{$search}%")
                 ->orWhere('excerpt', 'like', "%{$search}%");
@@ -113,14 +98,14 @@ class Post extends Model
 
     public function scopeByCategories($query, $categoryIds)
     {
-        return $query->whereHas('categories', function($q) use ($categoryIds) {
+        return $query->whereHas('categories', function ($q) use ($categoryIds) {
             $q->whereIn('categories.id', $categoryIds);
         });
     }
 
     public function scopeByTags($query, $tagIds)
     {
-        return $query->whereHas('tags', function($q) use ($tagIds) {
+        return $query->whereHas('tags', function ($q) use ($tagIds) {
             $q->whereIn('tags.id', $tagIds);
         });
     }
@@ -139,5 +124,4 @@ class Post extends Model
     {
         return $this->is_admin;
     }
-
 }

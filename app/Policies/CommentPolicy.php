@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Comment;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class CommentPolicy
 {
@@ -34,7 +33,7 @@ class CommentPolicy
 
     public function moderate(User $user): bool
     {
-        return /*$user->isAdmin ||*/ $user->isModerator();
+        return /* $user->isAdmin || */ $user->isModerator();
     }
 
     public function viewAny(User $user): bool
@@ -66,5 +65,4 @@ class CommentPolicy
     {
         return $this->moderate($user);
     }
-
 }

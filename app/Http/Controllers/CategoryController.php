@@ -8,30 +8,9 @@ use App\Models\Tag;
 
 class CategoryController extends Controller
 {
-    public function show0($id)
+    public function show(Category $category)// $id
     {
-        $category = Category::findOrFail($id);
-        $posts = Post::where('category_id', $id)
-            ->where('published', Post::STATUS_PUBLISHED)
-//            ->where('is_published', true)
-            ->with('user', 'tags')
-            ->latest()
-            ->paginate(10);
-
-        $categories = Category::withCount('posts')->get();
-        $tags = Tag::withCount('posts')->get();
-        $popularPosts = Post::where('published', Post::STATUS_PUBLISHED)//where('is_published', true)
-            ->orderBy('views', 'desc')
-            ->limit(5)
-            ->get();
-
-        return view('categories.show',
-            compact('category', 'posts', 'categories', 'tags', 'popularPosts'));
-    }
-
-    public function show(Category $category)//$id
-    {
-//        $category = Category::findOrFail($id);
+        //        $category = Category::findOrFail($id);
 
         // Получаем посты через отношение многие-ко-многим
         $posts = $category->posts()
@@ -40,11 +19,11 @@ class CategoryController extends Controller
             ->latest()
             ->paginate(10);
 
-        $categories = Category::withCount(['posts' => function($query) {
+        $categories = Category::withCount(['posts' => function ($query) {
             $query->where('published', Post::STATUS_PUBLISHED);
         }])->get();
 
-        $tags = Tag::withCount(['posts' => function($query) {
+        $tags = Tag::withCount(['posts' => function ($query) {
             $query->where('published', Post::STATUS_PUBLISHED);
         }])->get();
 

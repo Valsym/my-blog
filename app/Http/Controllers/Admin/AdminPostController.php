@@ -3,21 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
 use App\Models\Category;
+use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AdminPostController extends Controller
 {
     /**
      * Фильтрация и сортировка постов в админке
      *
-     * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function index(Request $request)
@@ -48,45 +46,6 @@ class AdminPostController extends Controller
         if ($request->filled('date_to')) {
             $query->dateTo($request->date_to);
         }
-
-        // Поиск по заголовку и содержанию
-        /*if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('content', 'like', "%{$search}%")
-                    ->orWhere('excerpt', 'like', "%{$search}%");
-            });
-        }
-
-        // Фильтр по статусу
-        if ($request->has('status') && $request->status) {
-            $query->where('published', $request->status);
-        }
-
-        // Фильтр по категориям
-        if ($request->has('categories') && $request->categories) {
-            $query->whereHas('categories', function($q) use ($request) {
-                $q->whereIn('categories.id', $request->categories);
-            });
-        }
-
-        // Фильтр по тегам
-        if ($request->has('tags') && $request->tags) {
-            $query->whereHas('tags', function($q) use ($request) {
-                $q->whereIn('tags.id', $request->tags);
-            });
-        }
-
-        // Фильтр по дате создания (от)
-        if ($request->has('date_from') && $request->date_from) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-
-        // Фильтр по дате создания (до)
-        if ($request->has('date_to') && $request->date_to) {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }*/
 
         // Сортировка
         $sort = $request->get('sort', 'created_at');
@@ -134,7 +93,7 @@ class AdminPostController extends Controller
         $count = 1;
 
         while (Post::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $count++;
+            $slug = $originalSlug.'-'.$count++;
         }
 
         $post = Post::create([
@@ -166,7 +125,7 @@ class AdminPostController extends Controller
         $categories = Category::all();
         $tags = Tag::all();
 
-        return view('admin.posts.create'/*edit'*/, compact('post', 'categories', 'tags'));
+        return view('admin.posts.create'/* edit' */, compact('post', 'categories', 'tags'));
     }
 
     public function update(Request $request, Post $post)
@@ -174,11 +133,6 @@ class AdminPostController extends Controller
         // Декодируем HTML-сущности перед валидацией
         $decodedContent = html_entity_decode($request->input('content'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $request->merge(['content' => $decodedContent]);
-
-//        dd($request->all()); // отладка
-//        Log::debug('=== UPDATE METHOD STARTED ===');
-//        Log::debug('Request data:', $request->all());//['content' => $data['content']]);////
-//        Log::debug('Post ID:', ['id' => $post->id]);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -193,17 +147,6 @@ class AdminPostController extends Controller
             'updated_at' => 'nullable|date',
         ]);
 
-//        Log::debug('Validated data:', $validated);//['data'=>$validated]);
-//        Log::debug('Before update');
-
-//        $post->update([
-//            'title' => $validated['title'],
-//            'content' => $validated['content'],
-//            'excerpt' => $validated['excerpt'],
-//            'published' => $validated['published'],
-//            'created_at' => $validated['created_at'],
-//            'updated_at' => $validated['updated_at'],
-//        ]);
         // Явно устанавливаем значения
         $post->title = $validated['title'];
         $post->content = $validated['content']; // ← явное присвоение
@@ -214,14 +157,6 @@ class AdminPostController extends Controller
 
         $post->save(); // ← используем save() вместо update()
 
-//        Log::debug('After update');
-//        Log::debug('Post after update', $post->toArray());
-//        // Проверим, обновилась ли запись
-//        $updatedPost = Post::find($post->id);
-//        Log::debug('Updated post:', [
-//            'title' => $updatedPost->title,
-//            'content_length' => strlen($updatedPost->content)
-//        ]);
         // Синхронизируем категории и теги
         $post->categories()->sync($request->input('categories', []));
         $post->tags()->sync($request->input('tags', []));
@@ -244,27 +179,27 @@ class AdminPostController extends Controller
     {
 
         $request->validate([
-            'file' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
         try {
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
-                $filename = Str::random(20) . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $filename = Str::random(20).'_'.time().'.'.$file->getClientOriginalExtension();
 
                 // Сохраняем в public/images вместо storage
                 $path = $file->move(public_path('images'), $filename);
 
                 Log::info('File uploaded to public path:', [
                     'path' => $path,
-                    'filename' => $filename
+                    'filename' => $filename,
                 ]);
 
                 // Возвращаем прямой URL
-                $url = url('images/' . $filename);
+                $url = url('images/'.$filename);
 
                 return response()->json([
-                    'location' => $url
+                    'location' => $url,
                 ]);
             }
 
@@ -272,6 +207,7 @@ class AdminPostController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Upload failed:', ['error' => $e->getMessage()]);
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminPostController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\CommentModerationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Auth\AdminAuthController;
@@ -9,14 +10,11 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SiteController;
-use App\Http\Controllers\Admin\CommentModerationController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
-
 
 // Маршруты для сайта
 Route::get('/home', [SiteController::class, 'index'])->name('home');
-Route::get('/', [SiteController::class, 'index']);// Перенаправление на home
+Route::get('/', [SiteController::class, 'index']); // Перенаправление на home
 Route::get('/about', [SiteController::class, 'about'])->name('about');
 Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
 Route::post('/contact', [SiteController::class, 'submitContactForm'])->name('contact.submit');
@@ -32,8 +30,8 @@ Route::prefix('admin')->group(function () {
 
     // Защита маршрутов админки
     Route::middleware('auth')->group(function () {
-//        Route::get('/news/create', [NewsController::class, 'create'])->name('admin.news.create');
-//        Route::post('/news', [NewsController::class, 'store'])->name('admin.news.store');
+        //        Route::get('/news/create', [NewsController::class, 'create'])->name('admin.news.create');
+        //        Route::post('/news', [NewsController::class, 'store'])->name('admin.news.store');
         Route::get('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
         Route::middleware('admin')->name('admin.')->group(function () { // работает!!! 26/09
@@ -44,46 +42,46 @@ Route::prefix('admin')->group(function () {
                 ->name('posts.upload');
 
             //            Route::get("/posts/create", [PostController::class, "create"])->name('admin.posts.create');
-//            Route::post("/posts/store", [PostController::class, "store"])->name('admin.posts.store');
-////        Route::get("/posts/{id}", [PostController::class, "show"])->name('posts.show');
-//            Route::get("/posts/{id}/edit", [PostController::class, "edit"]);
-//            Route::put("/posts/{id}", [PostController::class, "update"]);
-//            Route::delete("/posts/{id}", [PostController::class, "destroy"]);
+            //            Route::post("/posts/store", [PostController::class, "store"])->name('admin.posts.store');
+            // //        Route::get("/posts/{id}", [PostController::class, "show"])->name('posts.show');
+            //            Route::get("/posts/{id}/edit", [PostController::class, "edit"]);
+            //            Route::put("/posts/{id}", [PostController::class, "update"]);
+            //            Route::delete("/posts/{id}", [PostController::class, "destroy"]);
         });
     });
 });
-//Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
+// Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
 //    Route::resource('posts', AdminPostController::class)->except(['show']);
-//});
+// });
 
 // Отображение одной статьи
-Route::get("/posts/{id}", function ($id) {
-    return "Статья номер: " . $id;
+Route::get('/posts/{id}', function ($id) {
+    return 'Статья номер: '.$id;
 });
 // Маршрут с необязательным параметром
-Route::get("/user/{name?}", function ($name = "Гость") {
-    return "Привет, " . $name . "! Добро пожаловать в блог!";
+Route::get('/user/{name?}', function ($name = 'Гость') {
+    return 'Привет, '.$name.'! Добро пожаловать в блог!';
 });
 
-Route::prefix("admin")->group(function () {
-    Route::get("/dashboard", function () {
-        return "Админ-панель";
+Route::prefix('admin')->group(function () {
+    Route::get('/dashboard', function () {
+        return 'Админ-панель';
     });
-    Route::get("/users", function () {
-        return "Список пользователей";
+    Route::get('/users', function () {
+        return 'Список пользователей';
     });
 });
 
-Route::get("/posts", [PostController::class, "index"])->name('public.posts.index');
-//Route::get("/posts/create", [PostController::class, "create"]);
-//Route::post("/posts", [PostController::class, "store"]);
-Route::get("/posts/{id}", [PostController::class, "show"])->name('public.posts.show');
+Route::get('/posts', [PostController::class, 'index'])->name('public.posts.index');
+// Route::get("/posts/create", [PostController::class, "create"]);
+// Route::post("/posts", [PostController::class, "store"]);
+Route::get('/posts/{id}', [PostController::class, 'show'])->name('public.posts.show');
 
-Route::get("/posts/{tag:slug}", [PostController::class, "show"])->name('public.posts.show');
+Route::get('/posts/{tag:slug}', [PostController::class, 'show'])->name('public.posts.show');
 
-//Route::get("/posts/{id}/edit", [PostController::class, "edit"]);
-//Route::put("/posts/{id}", [PostController::class, "update"]);
-//Route::delete("/posts/{id}", [PostController::class, "destroy"]);
+// Route::get("/posts/{id}/edit", [PostController::class, "edit"]);
+// Route::put("/posts/{id}", [PostController::class, "update"]);
+// Route::delete("/posts/{id}", [PostController::class, "destroy"]);
 
 // Страница категорий статей (/categories)
 
@@ -101,29 +99,29 @@ Route::prefix('/comments')->group(function () {
 // Маршруты модерации
 // было... стало:
 // Маршруты модерации - используем более конкретный gate
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'/*'can:moderate'/*'can:view comment moderation'*/])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'/* 'can:moderate'/*'can:view comment moderation' */])->group(function () {
     Route::get('/comments', [CommentModerationController::class, 'index'])->name('comments.index');
     Route::get('/comments/{comment}', [CommentModerationController::class, 'show'])->name('comments.show');
 
     // Защищаем отдельные действия более специфичными gates
-//    Route::middleware('can:approve comments')->group(function () {
-        Route::post('/comments/{comment}/approve', [CommentModerationController::class, 'approve'])->name('comments.approve');
-//    });
+    //    Route::middleware('can:approve comments')->group(function () {
+    Route::post('/comments/{comment}/approve', [CommentModerationController::class, 'approve'])->name('comments.approve');
+    //    });
 
-//    Route::/*middleware('can:reject comments')->*/group(function () {
-        Route::post('/comments/{comment}/reject', [CommentModerationController::class, 'reject'])->name('comments.reject');
-        Route::post('/comments/bulk-action', [CommentModerationController::class, 'bulkAction'])->name('comments.bulk-action');
-//    });
+    //    Route::/*middleware('can:reject comments')->*/group(function () {
+    Route::post('/comments/{comment}/reject', [CommentModerationController::class, 'reject'])->name('comments.reject');
+    Route::post('/comments/bulk-action', [CommentModerationController::class, 'bulkAction'])->name('comments.bulk-action');
+    //    });
 });
 
 // Маршруты для категорий
-//Route::get('/categories/{id}', [App\Http\Controllers\CategoryController::class, 'show'])
+// Route::get('/categories/{id}', [App\Http\Controllers\CategoryController::class, 'show'])
 //    ->name('public.categories.show');
 Route::get('/categories/{category:slug}', [CategoryController::class, 'show'])
     ->name('public.categories.show');
 
 // Маршруты для тегов
-//Route::get('/tags/{id}', [App\Http\Controllers\TagController::class, 'show'])
+// Route::get('/tags/{id}', [App\Http\Controllers\TagController::class, 'show'])
 //    ->name('public.tags.show');
 Route::get('/tags/{tag:slug}', [App\Http\Controllers\TagController::class, 'show'])
     ->name('public.tags.show');
@@ -137,8 +135,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('posts', AdminPostController::class);
 
     // Комментарии
-//    Route::get('/comments', [AdminCommentController::class, 'index'])->name('comments.index');
-//    Route::delete('/comments/{comment}', [AdminCommentController::class, 'destroy'])->name('comments.destroy');
+    //    Route::get('/comments', [AdminCommentController::class, 'index'])->name('comments.index');
+    //    Route::delete('/comments/{comment}', [AdminCommentController::class, 'destroy'])->name('comments.destroy');
 
     // Пользователи
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');

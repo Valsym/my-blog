@@ -12,7 +12,6 @@ class CommentModerationController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-//        $this->middleware('can:moderate comments');
     }
 
     /**
@@ -21,7 +20,7 @@ class CommentModerationController extends Controller
     public function index(Request $request)
     {
         // Временная проверка
-        if (!auth()->user()->is_admin && !auth()->user()->is_moderator) {
+        if (! auth()->user()->is_admin && ! auth()->user()->is_moderator) {
             abort(403, 'Access denied.');
         }
 
@@ -67,7 +66,7 @@ class CommentModerationController extends Controller
     public function reject(Request $request, Comment $comment)
     {
         $request->validate([
-            'moderation_notes' => 'required|min:5|max:500'
+            'moderation_notes' => 'required|min:5|max:500',
         ]);
 
         $comment->update([
@@ -88,7 +87,7 @@ class CommentModerationController extends Controller
         $request->validate([
             'comment_ids' => 'required|array',
             'comment_ids.*' => 'exists:comments,id',
-            'action' => 'required|in:approve,reject,delete'
+            'action' => 'required|in:approve,reject,delete',
         ]);
 
         $count = 0;
@@ -124,8 +123,7 @@ class CommentModerationController extends Controller
             }
         }
 
-//        return back()->with('success', "Обработано комментариев: {$count}");
-        $message = match($action) {
+        $message = match ($action) {
             'approve' => "Одобрено комментариев: {$count}",
             'reject' => "Отклонено комментариев: {$count}",
             'delete' => "Удалено комментариев: {$count}",
@@ -145,4 +143,3 @@ class CommentModerationController extends Controller
         return view('admin.comments.show', compact('comment'));
     }
 }
-

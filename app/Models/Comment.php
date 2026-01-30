@@ -6,23 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use League\CommonMark\CommonMarkConverter;
 
 class Comment extends Model
 {
     use SoftDeletes;
 
     const STATUS_PENDING = 'pending';
+
     const STATUS_APPROVED = 'approved';
+
     const STATUS_REJECTED = 'rejected';
 
-    // было:
-//    protected $fillable = [
-//        'body',
-//        'user_id',
-//        'post_id',
-//        'parent_id'
-//    ];
     protected $fillable = [
         'body',
         'user_id',
@@ -32,7 +26,7 @@ class Comment extends Model
         'moderation_notes',
         'moderated_by',
         'moderated_at',
-        'is_edited'
+        'is_edited',
     ];
 
     protected $casts = [
@@ -40,20 +34,7 @@ class Comment extends Model
         'is_edited' => 'boolean',
     ];
 
-    //protected $with = ['user'];
-
-
     protected $with = ['user', 'replies'];
-
-    public function getBodyHtmlAttribute()
-    {
-        $converter = new CommonMarkConverter([
-            'html_input' => 'strip',
-            'allow_unsafe_links' => false,
-        ]);
-
-        return $converter->convertToHtml($this->body);
-    }
 
     /**
      * Пользователь, оставивший комментарий
@@ -93,7 +74,7 @@ class Comment extends Model
      */
     public function isReply(): bool
     {
-        return !is_null($this->parent_id);
+        return ! is_null($this->parent_id);
     }
 
     /**
@@ -196,5 +177,4 @@ class Comment extends Model
 
         return true;
     }
-
 }

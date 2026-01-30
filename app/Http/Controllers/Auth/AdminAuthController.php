@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
-
 
 class AdminAuthController extends Controller
 {
@@ -30,29 +29,20 @@ class AdminAuthController extends Controller
             if ($user->is_admin) {
                 // Сохраняем информацию о том, что пользователь админ
                 session(['is_admin' => true]);
-                //dd('ok!');
 
-                return redirect()->route('admin.posts.index')//create')
+                return redirect()->route('admin.posts.index')// create')
                     ->with('success', 'Вы успешно вошли в админку!');
-            } else if ($user->is_moderator) {
+            } elseif ($user->is_moderator) {
                 // Сохраняем информацию о том, что пользователь is_moderator
                 session(['is_moderator' => true]);
-                //dd('ok!');
 
                 return redirect()->route('admin.posts.create')
                     ->with('success', 'Вы успешно вошли в админку!');
             } else {
-//                return redirect()->route('home')
-//                  return redirect()->back()
-//                    ->with('success', $user->name.', Вы успешно вошли на сайт!');
                 return view('auth.admin_login', [
                     'success' => $user->name.', Вы успешно вошли на сайт!',
-                    'name' => $user->name
-                    ]);
-//                Auth::logout();
-//
-//                return redirect()->back()->withErrors(['email' =>
-//                    'У вас нет прав администратора.']);
+                    'name' => $user->name,
+                ]);
             }
         }
 
@@ -72,15 +62,11 @@ class AdminAuthController extends Controller
         session()->regenerateToken();
 
         return redirect('/home')->with('success', 'Вы вышли из админки!');
-
-//        session()->forget(['is_admin', 'is_moderator']); // Удаляем сессию
-//        return redirect('/home')->with('success', 'Вы вышли из админки!');
     }
 
     /**
      * Регистрация пользователя
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function register(Request $request)
@@ -92,12 +78,7 @@ class AdminAuthController extends Controller
             'password' => [
                 'required',
                 'confirmed',
-                Password::min(8)
-//                    ->letters() // упрощаем для ввода, типа: password
-//                    ->mixedCase()
-//                    ->numbers()
-//                    ->symbols()
-//                    ->uncompromised()
+                Password::min(8),
             ],
         ], [
             'name.required' => 'Поле имя обязательно для заполнения',
@@ -113,7 +94,7 @@ class AdminAuthController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибки валидации',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -125,29 +106,16 @@ class AdminAuthController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
-            // 4. Дополнительные действия (опционально)
-            // Auth::login($user); // Автоматический вход после регистрации
-            // event(new Registered($user)); // Отправка email подтверждения
-
             return view('auth.admin_login', [
                 'success' => $user->name.' - вы успешно зарегистрированы!<br>Введите ваши данные',
-//                'name' => $user->name
             ]);
-//            return redirect()->route('admin.login')
-//                ->with('success', "Пользователь $request->name - вы успешно зарегистрированы!<br>Введите ваши данные");
-
-//            return response()->json([
-//                'success' => true,
-//                'message' => 'Пользователь успешно зарегистрирован',
-//                'user' => $user
-//            ], 201);
 
         } catch (\Exception $e) {
             // 5. Обработка ошибок базы данных
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка при создании пользователя',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -156,5 +124,4 @@ class AdminAuthController extends Controller
     {
         return view('auth.register_form');
     }
-
 }

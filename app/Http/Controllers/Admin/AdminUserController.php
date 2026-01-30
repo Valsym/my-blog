@@ -69,7 +69,7 @@ class AdminUserController extends Controller
         }
 
         $user->update([
-            'is_blocked' => !$user->is_blocked
+            'is_blocked' => ! $user->is_blocked,
         ]);
 
         $status = $user->is_blocked ? 'заблокирован' : 'разблокирован';

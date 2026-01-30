@@ -28,5 +28,5 @@ return [
     'notifications' => [
         'admin_on_pending' => true,
         'user_on_approval' => false,
-    ]
+    ],
 ];

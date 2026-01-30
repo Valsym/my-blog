@@ -13,16 +13,6 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-//    protected $fillable = [
-//        'name',
-//        'email',
-//        'password',
-//    ];
     protected $fillable = [ // 26/09/2025
         'name', 'email', 'password', 'is_trusted', 'is_moderator',
         'is_admin', 'is_blocked',
@@ -45,19 +35,6 @@ class User extends Authenticatable
         'is_admin' => 'boolean',
         'is_blocked' => 'boolean',
     ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-//    protected function casts(): array
-//    {
-//        return [
-//            'email_verified_at' => 'datetime',
-//            'password' => 'hashed',
-//        ];
-//    }
 
     public function isAdmin(): bool
     {
@@ -101,7 +78,7 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
-        public function isBlocked()
+    public function isBlocked()
     {
         return $this->is_blocked;
     }

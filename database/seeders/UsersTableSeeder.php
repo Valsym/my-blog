@@ -14,31 +14,31 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create("ru_RU");
+        $faker = Faker::create('ru_RU');
 
         // Создаем администратора
-        DB::table("users")->insert([
-            "name" => "Администратор",
-            "email" => "admin@example.com",
-            "email_verified_at" => now(),
-            "password" => bcrypt("password"),
-            "is_admin" => true,
-            "remember_token" => Str::random(10),
-            "created_at" => now(),
-            "updated_at" => now(),
+        DB::table('users')->insert([
+            'name' => 'Администратор',
+            'email' => 'admin@example.com',
+            'email_verified_at' => now(),
+            'password' => bcrypt('password'),
+            'is_admin' => true,
+            'remember_token' => Str::random(10),
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         // Создаем обычных пользователей
         for ($i = 0; $i < 10; $i++) {
-            DB::table("users")->insert([
-                "name" => $faker->name,
-                "email" => $faker->unique()->safeEmail,
-                "email_verified_at" => now(),
-                "password" => bcrypt("password"),
-                "is_admin" => false,
-                "remember_token" => Str::random(10),
-                "created_at" => now(),
-                "updated_at" => now(),
+            DB::table('users')->insert([
+                'name' => $faker->name,
+                'email' => $faker->unique()->safeEmail,
+                'email_verified_at' => now(),
+                'password' => bcrypt('password'),
+                'is_admin' => false,
+                'remember_token' => Str::random(10),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
     }
