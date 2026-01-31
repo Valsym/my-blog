@@ -24,7 +24,7 @@ class AdminAuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             // Проверяем, является ли пользователь администратором
-            $user = Auth::user();
+            $user = User::find(Auth::id());
 
             if ($user->is_admin) {
                 // Сохраняем информацию о том, что пользователь админ
@@ -67,7 +67,8 @@ class AdminAuthController extends Controller
     /**
      * Регистрация пользователя
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
      */
     public function register(Request $request)
     {

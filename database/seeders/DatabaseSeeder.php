@@ -2,9 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,14 +12,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-        //        $faker = Faker::create("ru_RU");
-
-        //        User::factory()->create([
-        //            'name' => 'Test User',
-        //            'email' => 'test@example.com',
-        //        ]);
-
-        //
+        $this->call([
+            UsersTableSeeder::class,
+            CategoriesTableSeeder::class,
+            TagsTableSeeder::class,
+            PostsTableSeeder::class,
+            UpdatePostsPublishedStatus::class,
+            CommentsTableSeeder::class,
+            TrustedUsersSeeder::class,
+        ]);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class AdminUserController extends Controller
@@ -46,7 +47,7 @@ class AdminUserController extends Controller
     public function destroy(User $user)
     {
         // Не позволяем удалить самого себя
-        if ($user->id === auth()->id()) {
+        if ($user->id === Auth::id()) {
             return redirect()
                 ->route('admin.users.index')
                 ->with('error', 'Вы не можете удалить свой собственный аккаунт');
@@ -62,7 +63,7 @@ class AdminUserController extends Controller
     public function toggleBlock(User $user)
     {
         // Не позволяем заблокировать самого себя
-        if ($user->id === auth()->id()) {
+        if ($user->id === Auth::id()) {
             return redirect()
                 ->route('admin.users.index')
                 ->with('error', 'Вы не можете заблокировать свой собственный аккаунт');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,8 +20,9 @@ class CommentModerationController extends Controller
      */
     public function index(Request $request)
     {
+        $user = User::find(Auth::id());
         // Временная проверка
-        if (! auth()->user()->is_admin && ! auth()->user()->is_moderator) {
+        if (! $user->is_admin && ! $user->is_moderator) {
             abort(403, 'Access denied.');
         }
 

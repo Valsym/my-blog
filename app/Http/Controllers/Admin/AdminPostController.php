@@ -20,31 +20,44 @@ class AdminPostController extends Controller
      */
     public function index(Request $request)
     {
+        /** @var \App\Models\Post|\Illuminate\Database\Eloquent\Builder $query */
+
         $query = Post::with(['categories', 'tags', 'user']);
 
         // Применяем фильтры через scope-методы
         if ($request->filled('search')) {
-            $query->search($request->search);
+            $query->search($request->input('search'));
+            //$query->search($request->search);
         }
 
         if ($request->filled('status')) {
-            $query->byStatus($request->status);
+            $query->byStatus($request->input('status'));
+//            $query->byStatus($request->status);
         }
 
         if ($request->filled('categories')) {
-            $query->byCategories($request->categories);
+            // Если categories приходит как массив или строка
+            $categories = is_array($request->input('categories'))
+                ? $request->input('categories')
+                : explode(',', $request->input('categories'));
+            $query->byCategories($categories);
+//            $query->byCategories($request->categories);
         }
 
         if ($request->filled('tags')) {
-            $query->byTags($request->tags);
+            $tags = is_array($request->input('tags'))
+                ? $request->input('tags')
+                : explode(',', $request->input('tags'));
+            $query->byTags($tags);
+//            $query->byTags($request->tags);
         }
 
         if ($request->filled('date_from')) {
-            $query->dateFrom($request->date_from);
+            $query->dateFrom($request->input('date_from'));
         }
 
         if ($request->filled('date_to')) {
-            $query->dateTo($request->date_to);
+            $query->dateTo($request->input('date_to'));
         }
 
         // Сортировка
@@ -88,7 +101,7 @@ class AdminPostController extends Controller
         ]);
 
         // Генерация slug
-        $slug = Str::slug($request->title);
+        $slug = Str::slug($request->input('title'));
         $originalSlug = $slug;
         $count = 1;
 
@@ -109,11 +122,11 @@ class AdminPostController extends Controller
 
         // Привязываем категории и теги
         if ($request->has('categories')) {
-            $post->categories()->sync($request->categories);
+            $post->categories()->sync($request->input('categories'));
         }
 
         if ($request->has('tags')) {
-            $post->tags()->sync($request->tags);
+            $post->tags()->sync($request->input('tags'));
         }
 
         return redirect()->route('admin.posts.index')

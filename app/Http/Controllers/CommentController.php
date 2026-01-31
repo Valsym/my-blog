@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -56,12 +57,6 @@ class CommentController extends Controller
         // 26/09/2025
         return back()->with('success', 'Комментарий добавлен! '.
             ($status === 'pending' ? 'Он будет опубликован после проверки модератором.' : ''));
-
-        if ($request->ajax()) {
-            return response()->json($comment);
-        }
-
-        return back()->with('success', 'Комментарий добавлен!');
     }
 
     public function update(Request $request, Comment $comment)
@@ -117,7 +112,8 @@ class CommentController extends Controller
     private function determineCommentStatus(string $body): string
     {
         // Автоматическое одобрение для доверенных пользователей
-        if (auth()->user()->isTrusted()) {
+        $user = User::find(Auth::id());
+        if ($user->isTrusted()) {
             return Comment::STATUS_APPROVED;
         }
 

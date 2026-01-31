@@ -1,7 +1,8 @@
 #!/bin/bash
-cd www/valsy.ru/Laravel/my-blog-12/
+# На продакшн сервере
+cd /path/to/project
 git pull origin main
-/opt/php83/bin/php artisan cache:clear
-/opt/php83/bin/php artisan view:clear
-/opt/php83/bin/php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+bin/php artisan config:clear
 echo "Deployment completed!"

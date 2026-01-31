@@ -44,9 +44,12 @@
 ## 📦 Установка
 
 1. **Клонирование репозитория**
-   ```bash
-   git clone https://github.com/Valsym/my-blog.git
-   cd my-blog
+```bash
+git clone https://github.com/Valsym/my-blog.git
+# or
+git clone git@github.com:valsym/my-blog.git
+cd my-blog
+```
 2. **Установка зависимостей**
 
 ```bash
@@ -59,28 +62,18 @@ npm install
 cp .env.example .env
 php artisan key:generate
 ```
-4. **Настройка базы данных**
-
-```bash
-php artisan migrate --seed
-```
 5. **Запуск**
-
 ```bash
-php artisan serve
-npm run dev
+sail up -d
 ```
-## 🗃️ База данных
+4. **Настройка базы данных**
 ```bash
-# Миграции
-php artisan migrate
-
-# Сиды (тестовые данные)
-php artisan db:seed
-
-# Или все вместе
 php artisan migrate --seed
 ```
+5. Сайт
+http://localhost/home
+Вход в админку:   admin@example.com / password
+
 ## 👤 Аутентификация
 Проект использует стандартную аутентификацию Laravel с дополнительными функциями:
 

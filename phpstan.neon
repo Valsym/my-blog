@@ -1,0 +1,12 @@
+parameters:
+    level: 5
+    paths:
+        - app
+    ignoreErrors:
+        - '#Call to an undefined static method .*::where\(\)#'
+        - '#Call to an undefined static method .*::create\(\)#'
+        - '#Call to an undefined static method .*::withCount\(\)#'
+        - '#Call to an undefined static method .*::count\(\)#'
+        - '#Call to an undefined static method .*::find\(\)#'
+        - '#Access to an undefined property Illuminate\\Http\\Request::#'
+        - '#PHPDoc tag @mixin contains unknown class#'

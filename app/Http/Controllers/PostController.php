@@ -91,7 +91,7 @@ class PostController extends SiteController
             'slug' => Str::slug($title),
             'content' => $content,
             'excerpt' => Str::limit($validated['content'], 150),
-            'user_id' => Auth::user()->id,
+            'user_id' => Auth::id(),
             'views' => rand(0, 1000),
             'published' => true,
             'published_at' => now(),
@@ -105,6 +105,7 @@ class PostController extends SiteController
 
         $requestTags = $request->only(['tags']);
 
+        $postTags = [];
         foreach ($requestTags['tags'] as $tagIndex) {
             $postTags[] = [
                 'post_id' => $postId,
