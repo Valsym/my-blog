@@ -1,8 +1,13 @@
 # My Blog on Laravel
+# Проект с CI/CD и статическим анализом
+
 
 ![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel)
 ![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql)
+## 🛡️ Качество кода
+[![PHPStan](https://img.shields.io/badge/PHPStan-Level%205-brightgreen.svg?style=flat)](https://phpstan.org/user-guide/rule-levels)
+[![CI/CD Status](https://github.com/Valsym/my-blog/workflows/Laravel%20CI/badge.svg)](https://github.com/Valsym/mycrm-showcase/actions)
 
 Полнофункциональный блог на Laravel с админ-панелью, системой комментариев, тегами и категориями.
 
@@ -162,12 +167,14 @@ php artisan view:clear
 - **Laravel Pint**: Автоформатирование кода
 - **PHPStan**: Настроен статический анализ, прошел уровень 5/8
 - **Git Hooks**: Настроена автоматическая проверка качества кода через Git pre-commit hooks
-- **CI/CD Ready**: Конфигурация, подготовленная для GitHub Actions
+- **CI/CD**: Интегрирована с GitHub Actions pipeline с этапами: lint, static analysis
+- **CI/CD Ready**: Конфигурация, подготовленная для GitHub Actions с этапами testing, deployment
 
-### Running Quality Checks
+### Запуск проверок
 ```bash
 # Run PHPStan
-composer analyse
+composer analyse #or
+./vendor/bin/phpstan analyse --level=5
 
 # Run on specific file
 vendor/bin/phpstan analyse app/Models/Post.php

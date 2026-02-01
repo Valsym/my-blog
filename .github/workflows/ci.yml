@@ -1,0 +1,41 @@
+name: Laravel CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  phpstan:
+    name: PHPStan Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      # Шаг 1: Получить код из репозитория
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Шаг 2: Установить PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'  # Укажите вашу версию PHP
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql
+          coverage: none
+
+      # Шаг 3: Установить зависимости Composer
+      - name: Install dependencies
+        run: |
+          composer install --prefer-dist --no-progress --no-suggest
+
+      # Шаг 4: Запустить PHPStan
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --memory-limit=2G
+
+      # Опционально: Запустить тесты
+#      - name: Run Tests
+#        run: |
+#          cp .env.example .env.test
+#          php artisan key:generate
+#          vendor/bin/phpunit --testdox
