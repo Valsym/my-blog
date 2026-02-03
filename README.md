@@ -152,15 +152,23 @@ php artisan db:seed
 php artisan route:list
 ```
 ## Деплой
-Проект использует Git-based деплой:
 
+### Автоматический (рекомендуется)
+При пуше в ветку `main` автоматически:
+1. Запускается PHPStan анализ
+2. Код деплоится на production сервер через SSH
+
+### Ручной деплой
 ```bash
-# На продакшн сервере
+# На production сервере
 cd /path/to/project
 git pull origin main
+composer install --no-dev --optimize-autoloader
 php artisan cache:clear
 php artisan view:clear
+php artisan config:cache
 ```
+
 ## Качество кода
 
 ### Статический анализ и исправления
